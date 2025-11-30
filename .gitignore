@@ -1,0 +1,20 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.cache
+*.dbmdl
+
+# Build folders
+bin/
+obj/
+
+# NuGet
+packages/
+*.nupkg
+
+# IIS Express
+/ApplicationHost.config
+
+# Others
+*.log
