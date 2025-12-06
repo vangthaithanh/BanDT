@@ -1,23 +1,104 @@
-﻿<!DOCTYPE html>
+﻿@using WebDienThoai.Models
+<!DOCTYPE html>
 <html>
 <head>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    <link rel="stylesheet" href="~/Content/ThongTin.css">
     <style>
         body {
             margin-top: 0 !important;
             padding-top: 0 !important;
         }
+
+        .breadcrumb-bar {
+            padding: 8px 24px;
+            background: #f5f5f5;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+            .breadcrumb-bar a {
+                color: #007bff;
+                text-decoration: none;
+            }
     </style>
 </head>
 <body>
     <div>
         @Html.Partial("_Header")
     </div>
+    <div class="breadcrumb-bar">
+        @{
+            // Prefer rendering a view-defined section first to satisfy Razor verification.
+            var bcList = ViewBag.BreadcrumbList as IEnumerable<WebDienThoai.Models.BreadcrumbItem>;
+            var bc = (ViewBag.Breadcrumb ?? "").ToString();
+            var parts = new System.Collections.Generic.List<string>();
+            if (!string.IsNullOrWhiteSpace(bc))
+            {
+                var raw = bc.Split('/');
+                foreach (var p in raw)
+                {
+                    if (!string.IsNullOrWhiteSpace(p))
+                    {
+                        parts.Add(p.Trim());
+                    }
+                }
+            }
+        }
+
+        @* 1) Nếu view định nghĩa section Breadcrumb thì render nó (bắt buộc) *@
+        @if (IsSectionDefined("Breadcrumb"))
+        {
+            @RenderSection("Breadcrumb", required: false)
+        }
+        @* 2) Nếu controller set BreadcrumbList thì hiển thị list (ưu tiên nếu view không có section) *@
+        else if (bcList != null)
+        {
+            var first = true;
+            foreach (var item in bcList)
+            {
+                if (!first)
+                {
+                    <text> / </text>
+                }
+                first = false;
+
+                if (item != null && item.IsLink)
+                {
+                    <a href="@Url.Action(item.Action, item.Controller, item.RouteValues)">@item.Text</a>
+                }
+                else
+                {
+                    @Html.Raw(item?.Text)
+                }
+            }
+        }
+        @* 3) Fallback: cũ dùng ViewBag.Breadcrumb string *@
+        else if (parts.Count > 0)
+        {
+            for (int i = 0; i < parts.Count; i++)
+            {
+                var part = parts[i];
+                if (i == 0 && string.Equals(part, "Trang chủ", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    <a href='@Url.Action("Index", "Home")'>@part</a>
+                }
+                else
+                {
+                    @Html.Raw(part)
+                }
+
+                if (i < parts.Count - 1)
+                {
+                    <text> / </text>
+                }
+            }
+        }
+    </div>
     <div class="container body-content">
         @RenderBody()
         <hr />
-
     </div>
     <div>
         @Html.Partial("_Footer")

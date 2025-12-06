@@ -1,0 +1,71 @@
+﻿@model IEnumerable<WebDienThoai.Models.SanPhamViewModel>
+@{
+    ViewBag.Title = "Quản lý sản phẩm";
+}
+
+<h2 class="text-primary">QUẢN LÝ SẢN PHẨM</h2>
+
+<!-- ===== FORM LỌC + TÌM KIẾM ===== -->
+<form method="get" class="form-inline" style="margin-bottom: 20px;">
+
+    <!-- Lọc loại -->
+    <select name="maloai" class="form-control" style="width:200px; margin-right:10px;">
+        <option value="">-- Chọn loại --</option>
+
+        @if (ViewBag.Loai != null)
+        {
+            foreach (var loai in ViewBag.Loai)
+            {
+                <option value="@loai.MALOAI">@loai.TENLOAI</option>
+            }
+        }
+    </select>
+
+    <!-- Tìm kiếm -->
+    <input type="text" name="keyword" class="form-control"
+           placeholder="Nhập tên sản phẩm..." style="width:250px; margin-right:10px;" />
+
+    <!-- Button -->
+    <button type="submit" class="btn btn-primary">Lọc</button>
+</form>
+
+<hr />
+
+<!-- ===== DANH SÁCH SẢN PHẨM ===== -->
+<table class="table table-bordered table-hover">
+    <thead class="bg-info text-white">
+        <tr>
+            <th>Mã SP</th>
+            <th>Tên SP</th>
+            <th>Giá bán</th>
+            <th>Số lượng</th>
+            <th>Hình</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model != null)
+        {
+            foreach (var sp in Model)
+            {
+                <tr>
+                    <td>@sp.MASP</td>
+                    <td>@sp.TENSP</td>
+                    <td>@sp.GIABAN.ToString("N0")</td>
+                    <td>@sp.SOLUONG</td>
+                    <td>
+                        <img src="~/Images/@sp.ANH" width="60" height="60" style="object-fit:cover" />
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-info" href="/SanPham/Detail/@sp.MASP">Chi tiết</a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr><td colspan="6">Không có dữ liệu.</td></tr>
+        }
+    </tbody>
+</table>

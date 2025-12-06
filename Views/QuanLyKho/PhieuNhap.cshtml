@@ -1,0 +1,71 @@
+﻿@model WebDienThoai.Models.ViewModels.PhieuNhapListVM
+@{
+    ViewBag.Title = "Phiếu nhập";
+}
+
+<h2>Danh sách phiếu nhập</h2>
+
+@using (Html.BeginForm("PhieuNhap", "QuanLyKho", FormMethod.Get))
+{
+    <div class="row" style="margin-bottom:10px;">
+        <div class="col-md-4">
+            <select class="form-control" name="maKho">
+                <option value="">-- Tất cả kho --</option>
+                @foreach (var k in Model.KhoList)
+                {
+                    <option value="@k.MAKHO" @(k.MAKHO == Model.MAKHO ? "selected" : "")>
+                        @k.MAKHO - @k.TENKHO
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <input class="form-control" type="date" name="tuNgay" value="@(Model.TuNgay.HasValue ? Model.TuNgay.Value.ToString("yyyy-MM-dd") : "")" />
+        </div>
+
+        <div class="col-md-3">
+            <input class="form-control" type="date" name="denNgay" value="@(Model.DenNgay.HasValue ? Model.DenNgay.Value.ToString("yyyy-MM-dd") : "")" />
+        </div>
+
+        <div class="col-md-2">
+            <button class="btn btn-primary" type="submit">Lọc</button>
+        </div>
+    </div>
+}
+
+<p>
+    @Html.ActionLink("+ Tạo phiếu nhập", "TaoPhieuNhap", null, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Quay lại", "Index", null, new { @class = "btn btn-default" })
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Mã phiếu</th>
+            <th>Ngày nhập</th>
+            <th>Nhà cung cấp</th>
+            <th>Kho</th>
+            <th class="text-right">Tổng giá</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model.Items)
+        {
+            <tr>
+                <td>@p.MAPHIEUNHAP</td>
+                <td>@p.NGAYNHAP.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@p.NHACUNGCAP</td>
+                <td>
+                    @p.MAKHO @if (!string.IsNullOrWhiteSpace(p.TENKHO))
+                {<span>- @p.TENKHO</span>}
+                </td>
+                <td class="text-right">@p.TONGGIA.ToString("N0")</td>
+                <td class="text-right">
+                    @Html.ActionLink("Chi tiết", "ChiTietPhieuNhap", new { id = p.MAPHIEUNHAP }, new { @class = "btn btn-xs btn-info" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

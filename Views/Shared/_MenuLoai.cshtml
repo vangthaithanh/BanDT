@@ -1,0 +1,15 @@
+﻿
+@model IEnumerable<WebDienThoai.Models.LoaiSP>
+
+<div class="dropdown-menu danh-muc-menu">
+
+    @* Dùng foreach để sinh menu loại *@
+    @foreach (var loai in Model)
+    {
+        <a class="dropdown-item"
+           href="@Url.Action("Duyet", "Home", new { maloai = loai.MALOAI })">
+            @loai.TENLOAI
+        </a>
+    }
+
+</div>

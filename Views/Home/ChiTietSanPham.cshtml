@@ -1,0 +1,117 @@
+﻿@model WebDienThoai.Models.XemChiTietModel
+@{
+    ViewBag.Title = "ChiTietSanPham";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<main class="container">
+    <div class="row product-page-container">
+        <div class="col-lg-6 border-end">
+            <h1 class="product-title ">@Model.TENSP</h1>
+            <div class="product-gallery">
+                <img src="@Url.Content("~/Content/Anh/sanpham/" + Model.ANH)"
+                     alt="@Model.TENSP" />
+
+                <div class="thumbnail-images mt-3">
+                    <img src="~/Content/Anh/sanpham/iphone14-plus.webp" alt="Thumbnail 1" class="active">
+                    <img src="~/Content/Anh/sanpham/iphone14-plus.webp" alt="Thumbnail 1">
+                    <img src="~/Content/Anh/sanpham/iphone14-plus.webp" alt="Thumbnail 2">
+                    <img src="~/Content/Anh/sanpham/iphone14-plus.webp" alt="Thumbnail 3">
+                    <img src="~/Content/Anh/sanpham/iphone14-plus.webp" alt="Thumbnail 4">
+                </div>
+            </div>
+
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th colspan="2" style="font-size: 1.2em; text-align: center; background-color:  #eae2d7; padding: 15px; border-top-left-radius: 10px;border-top-right-radius: 10px;">
+                            Thông số kỹ thuật
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Kích thước màn hình</th>
+                        <td>@Model.KICHTHUOC</td>
+                    </tr>
+                    <tr>
+                        <th>Công nghệ màn hình</th>
+                        <td>@Model.CONGNGHE</td>
+                    </tr>
+                    <tr>
+                        <th>Camera sau</th>
+                        <td>
+                            @Model.CAMERA
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Camera trước</th>
+                        <td>12MP, ƒ/1.9</td>
+                    </tr>
+                    <tr>
+                        <th>Chipset</th>
+                        <td>Apple A15 Bionic 6 nhân</td>
+                    </tr>
+                    <tr>
+                        <th>Công nghệ NFC</th>
+                        <td>Có</td>
+                    </tr>
+                    <tr>
+                        <th>Bộ nhớ trong</th>
+                        <td>@Model.BONHO</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-lg-6 product-info">
+            <div class="price-box d-flex align-items-baseline mb-4">
+                <div class="price-label">Giá sản phẩm</div>
+                <span class="current-price">@string.Format("{0:N0} đ", Model.GIABAN)</span>
+                <span class="old-price">19.990.000₫</span>
+            </div>
+
+            <div class="section-title">Màu sắc</div>
+            <div class="d-flex flex-wrap mb-4">
+                <button class="option-button">
+                    <img src="~/Content/Anh/sanpham/iphone14-plus.webp" alt="Bạc">
+                    Bạc
+                </button>
+                <button class="option-button">
+                    <img src="~/Content/Anh/sanpham/iphone14-plus.webp" alt="Đen">
+                    Đen
+                </button>
+                <button class="option-button">
+                    <img src="~/Content/Anh/sanpham/iphone14-plus.webp" alt="Vàng">
+                    Vàng
+                </button>
+                <button class="option-button active">
+                    <img src="~/Content/Anh/sanpham/iphone14-plus.webp" alt="Tím">
+                    Tím
+                </button>
+            </div>
+
+            <div class="promo-box">
+                <div class="promo-item">
+                    <i class="fas fa-tag"></i> Tiết kiệm thêm <strong> 237.000đ </strong> cho Smember
+                </div>
+                <div class="promo-item">
+                    <i class="fa fa-graduation-cap"></i>Máy mới 100%, chính hãng Việt Nam
+                </div>
+                <div class="promo-item">
+                    <i class="fas fa-graduation-cap"></i> Ưu đãi Học sinh - sinh viên, Giảng viên - giáo viên
+                </div>
+            </div>
+
+            <div class="d-grid gap-3 mt-4">
+                <a class="custom-btn" id="mua" href="@Url.Action("Index", "GioHang")">MUA NGAY</a>
+
+                <form method="get" action="@Url.Action("Add", "GioHang")" class="d-flex align-items-center gap-2">
+                    <input type="hidden" name="id" value="@Model.MASP" />
+                    <input type="number" name="qty" value="1" min="1" class="form-control" style="width:100px;" />
+                    <button type="submit" class="custom-btn" id="themVaoGioHang">THÊM VÀO GIỎ HÀNG</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>

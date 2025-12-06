@@ -1,9 +1,27 @@
-﻿<!-- header.html -->
+﻿@using WebDienThoai.Models
+<!-- header.html -->
 <link rel="stylesheet" href="~/Content/styleDA.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+@{
+    var userName = Session["UserName"] as string;
+    var hoTen = Session["HoTen"] as string;
+    var role = Session["Role"] as string ?? "KHACH";
 
-<nav class="navbar navbar-expand-lg header">
-    <img class="navbar-brand header-img" src="~/Anh/logo/headerlogo.png">
+    // Get cart count from session
+    var cart = Session["GioHang"] as List<GioHang>;
+    int cartCount = 0;
+    if (cart != null)
+    {
+        foreach (var ci in cart)
+        {
+            cartCount += ci.SOLUONG;
+        }
+    }
+}
+<nav class="navbar navbar-expand-lg header" style="background-color: #f4ebdf;">
+    <a class="navbar-brand" href='@Url.Action("Index", "Home")'>
+        <img class="header-img" src="~/Anh/logo/headerlogo.png" alt="Logo" />
+    </a>
     <div class="input-group ms-5" style="max-width: 380px;">
         <!-- Rút ngắn kích thước thanh tìm kiếm -->
         <input class="form-control search-input" type="search" placeholder="Bạn muốn mua gì hôm nay?" aria-label="Search">
@@ -14,18 +32,68 @@
     </div>
     <ul class="navbar-nav ms-auto me-2">
         <li class="nav-item header-item me-4">
-            <!-- Điều chỉnh khoảng cách giữa các mục -->
             <span style="font-family: 'Font Awesome 6 Free'; font-weight: 900;">&#xf07a;</span>
-            <a class="nav-link" href="#">Giỏ hàng</a>
+            <a class="nav-link" href='@Url.Action("Index", "GioHang")'>
+                Giỏ hàng
+                <span class="badge bg-secondary ms-2">@cartCount</span>
+            </a>
         </li>
-        <li class="nav-item header-item me-4">
-            <!-- Điều chỉnh khoảng cách giữa các mục -->
-            <span style="font-family: 'Font Awesome 6 Free'; font-weight: 900;">&#xf0ca;</span>
-            <a class="nav-link" href="#">Danh mục</a>
+        <li class="nav-item header-item me-4 danh-muc-dropdown">
+            <a class="nav-link d-flex align-items-center">
+                <span style="font-family: 'Font Awesome 6 Free'; font-weight: 900;">&#xf0ca;</span>
+                <span class="ms-2 fw-bold">Danh mục</span>
+            </a>
+
+            <!-- MENU THẢ XUỐNG: sinh động bằng foreach -->
+            @Html.Action("MenuLoai", "Home")
+
         </li>
-        <li class="nav-item header-item">
-            <span style="font-family: 'Font Awesome 6 Free'; font-weight: 900;">&#xf2bd;</span>
-            <a class="nav-link" href="dangnhap.html" id="loginLink">Đăng nhập</a>
-        </li>
+
+
+        @if (Session["UserName"] == null)
+        {
+            <!-- CHƯA ĐĂNG NHẬP -->
+            <li class="nav-item header-item">
+                <span style="font-family: 'Font Awesome 6 Free'; font-weight: 900;">&#xf2bd;</span>
+                <a class="nav-link" href='@Url.Action("Login", "Account")' id="loginLink">Đăng nhập</a>
+            </li>
+        }
+        else
+        {
+            <!-- ĐÃ ĐĂNG NHẬP -->
+            if (role == "ADMIN")
+            {
+                <li class="nav-item header-item">
+                    <a class="nav-link" href="@Url.Action("Index", "QuanLyNhanSu")">Quản lý nhân sự</a>
+                </li>
+                <li class="nav-item header-item">
+                    <a class="nav-link" href="@Url.Action("Index", "QuanLyKho")">Quản lý kho</a>
+                </li>
+
+                <li class="nav-item header-item">
+                    <a class="nav-link" href="@Url.Action("Index", "QuanLySanPham")">Quản lý sản phẩm</a>
+                </li>
+            }
+            else if (role == "NVKHO")
+            {
+                <li class="nav-item header-item">
+                    <a class="nav-link" href="@Url.Action("Index", "QuanLyKho")">Quản lý kho</a>
+                </li>
+            }
+            else if (role == "NVSP")
+            {
+                <li class="nav-item header-item">
+                    <a class="nav-link" href="@Url.Action("Index", "QuanLySanPham")">Quản lý sản phẩm</a>
+                </li>
+            }
+
+            <li class="nav-item header-item">
+                <span class="nav-link">Xin chào, @(!string.IsNullOrEmpty(hoTen) ? hoTen : userName)</span>
+            </li>
+            <li class="nav-item header-item">
+                <a class="nav-link" href="@Url.Action("Logout", "Account")">Đăng xuất</a>
+            </li>
+        }
     </ul>
+
 </nav>

@@ -1,0 +1,262 @@
+﻿/*Trọng*/
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fdfaf7; /* Nền xám nhạt */
+}
+/* --- Custom CSS for Footer (tối giản) --- */
+.footer-placeholder {
+    background-color: #212529; /* Nền tối cho footer */
+    color: #dee2e6;
+    padding: 30px 0;
+    margin-top: 40px;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+    .footer-placeholder .footer-bottom {
+        background-color: #1a1d20;
+        padding: 15px 0;
+        border-top: 1px solid #343a40;
+        margin-top: 20px;
+        color: #888;
+        font-size: 0.8em;
+    }
+
+
+/* ----- Product Page Layout----- */
+.product-page-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-top: 30px;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+/* Product Details Section - Left Side (Image Gallery) */
+.product-gallery {
+    position: relative;
+    text-align: center;
+    padding: 20px;
+}
+
+    .product-gallery .main-image {
+        max-width: 100%;
+        height: auto;
+        max-height: 450px; /* Giới hạn chiều cao ảnh chính */
+        object-fit: contain; /* Đảm bảo ảnh hiển thị đầy đủ trong khung */
+        margin-bottom: 15px;
+    }
+
+    .product-gallery .thumbnail-images {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap; /* Cho phép các ảnh thumbnail xuống dòng nếu không đủ chỗ */
+    }
+
+        .product-gallery .thumbnail-images img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 5px;
+            cursor: pointer;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+            .product-gallery .thumbnail-images img:hover,
+            .product-gallery .thumbnail-images img.active {
+                border-color: #eae2d7;
+                transform: translateY(-3px);
+            }
+
+.gallery-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0,0,0,0.4);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    font-size: 1.5em;
+    transition: background-color 0.3s;
+}
+
+    .gallery-nav-btn:hover {
+        background-color: rgba(0,0,0,0.6);
+    }
+
+    .gallery-nav-btn.prev {
+        left: 10px;
+    }
+
+    .gallery-nav-btn.next {
+        right: 10px;
+    }
+
+/* Product Info Section - Right Side */
+.product-info {
+    padding: 20px;
+}
+
+.product-title {
+    font-size: 2em;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #343a40;
+}
+
+.price-box {
+    background-color: #f4ebdf;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+    .price-box .price-label {
+        font-size: 1em;
+        color: #6c757d;
+        margin-bottom: 5px;
+    }
+
+.current-price {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #aa1945; /* Màu đỏ cho giá hiện tại */
+    margin-right: 15px;
+}
+
+.old-price {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 1.2em;
+}
+
+.section-title {
+    font-weight: 600;
+    font-size: 1.15em;
+    margin-bottom: 15px;
+    margin-top: 25px;
+    color: #343a40;
+}
+
+.option-button {
+    border: 2px solid #ced4da;
+    border-radius: 8px;
+    padding: 10px 20px;
+    margin-right: 12px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    background-color: white;
+    transition: all 0.2s ease-in-out;
+    display: inline-flex; /* Để căn chỉnh icon và văn bản */
+    align-items: center;
+    font-weight: 500;
+    color: #495057;
+}
+
+    .option-button.active {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+        background-color: #e7f5ff; /* Nền xanh nhạt hơn khi active */
+        color: #007bff;
+    }
+
+    .option-button:hover:not(.active) {
+        border-color: #888;
+        background-color: #f8f9fa;
+    }
+
+    .option-button img {
+        width: 24px; /* Kích thước icon */
+        height: 24px;
+        margin-right: 8px;
+        border-radius: 50%; /* Bo tròn ảnh màu sắc */
+        border: 1px solid #eee;
+    }
+
+.color-option-text {
+    display: block; /* Đảm bảo giá nằm trên dòng mới */
+    font-size: 0.8em;
+    color: #6c757d;
+    margin-top: 3px; /* Khoảng cách giữa tên màu và giá */
+}
+
+.promo-box {
+    border: 1px dashed #aa1945; /* Viền nét đứt màu đỏ */
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #fffafb; /* Nền rất nhạt của màu đỏ */
+    margin-top: 30px;
+}
+
+    .promo-box strong {
+        color: #aa1945;
+    }
+
+.promo-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    color: #343a40;
+}
+
+    .promo-item svg {
+        color: #aa1945;
+        margin-right: 12px;
+        font-size: 1.2em;
+    }
+
+/* Nút MUA NGAY */
+.btn-lg {
+    padding: 15px 0;
+    font-size: 1.25rem;
+    font-weight: bold;
+    border-radius: 10px;
+}
+
+.btn-primary {
+    background-color: #aa1945; /* Nút mua ngay màu đỏ */
+    border-color: #aa1945;
+}
+
+    .btn-primary:hover {
+        background-color: #aa1945;
+        border-color: #aa1945;
+    }
+
+.product-table {
+    width: 100%;
+    border-collapse: collapse; /* Xóa khoảng trống giữa các border */
+    margin-top: 30px; /* Khoảng cách từ phần ảnh */
+    font-size: 0.95em;
+    color: #343a40; /* Màu chữ tổng thể */
+}
+
+    .product-table th,
+    .product-table td {
+        padding: 12px 15px; /* Đệm bên trong ô */
+        border-bottom: 1px solid #e9ecef; /* Đường kẻ dưới mỗi hàng */
+        text-align: left;
+    }
+
+    .product-table th {
+        background-color: #f8f9fa; /* Nền nhẹ cho cột tiêu đề */
+        font-weight: 600;
+        width: 35%; /* Đảm bảo cột tiêu đề không quá rộng */
+        vertical-align: top; /* Căn trên cho nội dung dài */
+    }
+
+/*Thu*/
+.custom-btn {
+    border: none;
+    border-radius: 10px;
+    background-color: #eae2d7;
+    padding: 10px;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}

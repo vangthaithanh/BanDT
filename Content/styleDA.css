@@ -1,15 +1,14 @@
-/* Điều chỉnh kích thước logo */
+
 .header-img {
-    max-width: 130px; /* Tăng kích thước logo */
-    max-height: 100px; /* Tăng chiều cao logo */
-    margin-left: 25px; /* Dịch logo sang bên phải thêm */
+    max-width: 130px; 
+    max-height: 100px; 
+    margin-left: 25px; 
 }
 
-/* Cải thiện thanh tìm kiếm */
 .search-input {
     border-radius: 20px 0 0 20px;
-    height: 38px; /* Giảm chiều cao thanh tìm kiếm */
-    margin-right: 5px; /* Dịch thanh tìm kiếm sang phải thêm */
+    height: 38px; 
+    margin-right: 5px; 
 }
 
 .search-button {
@@ -17,21 +16,20 @@
     height: 38px;
 }
 
-/* Điều chỉnh khoảng cách giữa các mục */
 .nav-item {
-    margin-left: 10px; /* Giảm khoảng cách giữa các mục */
+    background-color: #e6c191;
+    margin-left: 10px; 
 }
 
-/* Điều chỉnh khoảng cách giữa các mục và lề trái */
 .navbar-nav {
-    margin-left: 0px; /* Dịch các mục qua bên phải thêm nữa */
+    
+    margin-left: 0px; 
 }
 
-/* Chỉnh sửa khoảng cách giữa các mục */
 .header-item {
-    background-color: #f4ebdf; /* Màu nền mặc định cho các mục */
+    background-color: #f4ebdf;
     font-weight: 750;
-    width: 130px; /* Rút ngắn chiều rộng các mục thêm */
+    width: 130px; 
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
@@ -40,18 +38,69 @@
     position: relative;
 }
 
-    /* Mục hover */
+   
     .header-item:hover {
-        background-color: #e6c191; /* Màu nền khi hover */
+       
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         transform: scale(1.06);
     }
 
     .header-item a {
-        color: black; /* Đảm bảo màu chữ luôn là đen */
+        color: black;
         text-decoration: none;
     }
 
         .header-item a:hover {
-            color: white; /* Đổi màu chữ khi hover */
+            color: white; 
         }
+
+.danh-muc-dropdown {
+    position: relative;
+}
+
+.danh-muc-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 180px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    padding: 6px 0;
+    display: none;
+    z-index: 1000;
+}
+
+.danh-muc-dropdown:hover .danh-muc-menu {
+    display: block;
+}
+
+.danh-muc-menu .dropdown-item {
+    padding: 6px 16px;
+    font-size: 14px;
+}
+
+    .danh-muc-menu .dropdown-item:hover {
+        background-color: #f4ebdf;
+    }
+
+
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container.body-content {
+    flex: 1 0 auto;
+}
+
+
+footer.footer-shadow {
+    margin-top: 0 !important;
+    flex-shrink: 0;
+}

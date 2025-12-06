@@ -1,0 +1,104 @@
+﻿@model List<WebDienThoai.Models.SanPhamViewModel>
+@{
+    ViewBag.Title = "Sản Phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("LocSanPham", "Home", FormMethod.Get))
+{
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label>Loại</label>
+            @* có thể dùng DropDownList loại *@
+            @Html.TextBox(
+                "maloai",
+                (object)ViewBag.MaLoai,            // ÉP KIỂU
+                new { @class = "form-control" })
+        </div>
+
+        <div class="col-md-3">
+            <label>Hãng</label>
+            @Html.TextBox(
+                "hang",
+                (object)(ViewBag.Hang as string),   // ÉP KIỂU
+                new { @class = "form-control" })
+        </div>
+
+        <div class="col-md-2">
+            <label>Giá từ</label>
+            @Html.TextBox(
+                "giaMin",
+                (object)ViewBag.GiaMin,             // ÉP KIỂU
+                new { @class = "form-control", type = "number" })
+        </div>
+
+        <div class="col-md-2">
+            <label>Đến</label>
+            @Html.TextBox(
+                "giaMax",
+                (object)ViewBag.GiaMax,             // ÉP KIỂU
+                new { @class = "form-control", type = "number" })
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Lọc</button>
+        </div>
+    </div>
+}
+<div class="product-list">
+    @foreach (var sp in Model)
+    {
+        var url = Url.Content("~/Content/Anh/sanpham/" + sp.ANH);
+        <a class="no-underline-link" href="@Url.Action("ChiTietSanPham", "Home", new { id = sp.MASP })">
+            <div class="product-card">
+                @* Debug đường dẫn ảnh, nếu không cần nữa có thể xoá *@
+                @* <p>@url</p> *@
+
+                <img src="@url" alt="@sp.TENSP" />
+                <h3>@sp.TENSP</h3>
+                <div class="price">
+                    @string.Format("{0:N0} đ", sp.GIABAN)
+                </div>
+            </div>
+        </a>
+    }
+
+
+</div>
+
+<style>
+    .product-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        padding: 16px 24px;
+    }
+
+    .product-card {
+        width: 220px;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        padding: 12px;
+        background: #fff;
+        margin-bottom: 16px;
+    }
+
+        .product-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+        }
+
+        .product-card h3 {
+            margin: 8px 0 4px;
+            font-size: 14px;
+        }
+
+        .product-card .price {
+            color: #e21;
+            font-weight: bold;
+        }
+</style>
+
+

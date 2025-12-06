@@ -1,0 +1,38 @@
+﻿@model List<WebDienThoai.Models.Kho>
+@{
+    ViewBag.Title = "Quản lý kho";
+}
+
+<h2>Quản lý kho</h2>
+
+<p>
+    @Html.ActionLink("+ Tạo phiếu nhập", "TaoPhieuNhap", null, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Tồn kho", "TonKho", null, new { @class = "btn btn-default" })
+    @Html.ActionLink("Phiếu nhập", "PhieuNhap", null, new { @class = "btn btn-default" })
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Mã kho</th>
+            <th>Tên kho</th>
+            <th>Địa chỉ</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var k in Model)
+        {
+            <tr>
+                <td>@k.MAKHO</td>
+                <td>@k.TENKHO</td>
+                <td>@k.DIACHI</td>
+                <td class="text-right">
+                    @Html.ActionLink("Tồn kho", "TonKho", new { maKho = k.MAKHO }, new { @class = "btn btn-xs btn-info" })
+                    @Html.ActionLink("Phiếu nhập", "PhieuNhap", new { maKho = k.MAKHO }, new { @class = "btn btn-xs btn-default" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

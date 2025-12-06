@@ -1,0 +1,57 @@
+﻿@model WebDienThoai.Models.ViewModels.TonKhoVM
+@{
+    ViewBag.Title = "Tồn kho";
+}
+
+<h2>Tồn kho</h2>
+
+@using (Html.BeginForm("TonKho", "QuanLyKho", FormMethod.Get))
+{
+    <div class="row" style="margin-bottom:10px;">
+        <div class="col-md-6">
+            <select class="form-control" name="maKho">
+                <option value="">-- Tất cả kho --</option>
+                @foreach (var k in Model.KhoList)
+                {
+                    <option value="@k.MAKHO" @(k.MAKHO == Model.MAKHO ? "selected" : "")>
+                        @k.MAKHO - @k.TENKHO
+                    </option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary" type="submit">Lọc</button>
+        </div>
+        <div class="col-md-4 text-right">
+            @Html.ActionLink("Quay lại", "Index", null, new { @class = "btn btn-default" })
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.MAKHO))
+{
+    <div class="alert alert-info">
+        Đang xem kho: <b>@Model.MAKHO</b> @if (!string.IsNullOrWhiteSpace(Model.TENKHO))
+        {<span>- @Model.TENKHO</span>}
+    </div>
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Mã kho</th>
+            <th>Mã SP</th>
+            <th class="text-right">Số lượng</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var t in Model.Items)
+        {
+            <tr>
+                <td>@t.MAKHO</td>
+                <td>@t.MASP</td>
+                <td class="text-right">@t.SOLUONG</td>
+            </tr>
+        }
+    </tbody>
+</table>
