@@ -161,7 +161,7 @@ namespace WebDienThoai.Controllers
 
                 var pHang = cmd.Parameters.Add("@Hang", SqlDbType.VarChar, 50);
                 pHang.Value = string.IsNullOrWhiteSpace(hang) ? (object)DBNull.Value : hang;
-
+    
                 var pGiaMin = cmd.Parameters.Add("@GiaMin", SqlDbType.Decimal);
                 pGiaMin.Precision = 18;
                 pGiaMin.Scale = 2;

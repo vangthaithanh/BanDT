@@ -117,7 +117,7 @@
                     </div>
 
                     <div class="col-6">
-                        @using (Html.BeginForm("MuaNgay", "GioHang", FormMethod.Post, new { @class = "d-grid h-100" }))
+                        @using (Html.BeginForm("XacNhanMuaNgay", "GioHang", FormMethod.Post, new { @class = "d-grid h-100" }))
                         {
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="masp" value="@Model.MASP" />

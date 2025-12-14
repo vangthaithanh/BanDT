@@ -213,5 +213,40 @@ namespace WebDienThoai.Controllers
                 return View(vm);
             }
         }
+        public ActionResult DonHang(int? maHD, DateTime? tuNgay, DateTime? denNgay, string trangThai)
+        {
+            ViewBag.BreadcrumbList = new List<WebDienThoai.Models.BreadcrumbItem>
+    {
+        new WebDienThoai.Models.BreadcrumbItem { Text = "Trang chủ", Action = "Index", Controller = "Home" },
+        new WebDienThoai.Models.BreadcrumbItem { Text = "Quản lý kho", Action = "Index", Controller = "QuanLyKho" },
+        new WebDienThoai.Models.BreadcrumbItem { Text = "Quản lý đơn hàng" }
+    };
+
+            var vm = new DonHangKhoListVM();
+            vm.Filter.MaHD = maHD;
+            vm.Filter.TuNgay = tuNgay;
+            vm.Filter.DenNgay = denNgay;
+            vm.Filter.TrangThai = trangThai;
+
+            vm.Items = _dal.DonHangKho_List(maHD, tuNgay, denNgay, trangThai);
+            return View(vm); // Views/QuanLyKho/DonHang.cshtml
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CapNhatTrangThaiDonHang(int maHD, string trangThaiMoi, int? maHDFilter, DateTime? tuNgay, DateTime? denNgay, string trangThai)
+        {
+            try
+            {
+                _dal.DonHangKho_UpdateTrangThai(maHD, trangThaiMoi);
+                TempData["Success"] = $"Đã cập nhật MAHD {maHD} -> {trangThaiMoi}";
+            }
+            catch (SqlException ex)
+            {
+                TempData["Error"] = "Lỗi cập nhật: " + ex.Message;
+            }
+
+            return RedirectToAction("DonHang", new { maHD = maHDFilter, tuNgay, denNgay, trangThai });
+        }
     }
 }

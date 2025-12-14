@@ -1,0 +1,73 @@
+﻿@model WebDienThoai.Models.ViewModels.CheckoutPreviewVM
+@{
+    ViewBag.Title = "Xác nhận hóa đơn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<main class="container-fluid px-4 px-lg-5 py-4 py-lg-5">
+    <div class="bg-white rounded-3 shadow-sm p-4">
+        <h4 class="mb-3">Xác nhận hóa đơn</h4>
+        <div class="text-secondary small mb-3">Vui lòng kiểm tra lại sản phẩm trước khi thanh toán.</div>
+
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th style="width:90px">Ảnh</th>
+                        <th>Sản phẩm</th>
+                        <th class="text-end" style="width:120px">Đơn giá</th>
+                        <th class="text-center" style="width:110px">Số lượng</th>
+                        <th class="text-end" style="width:140px">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var it in Model.Items)
+                    {
+                        <tr>
+                            <td>
+                                <img src="~/Content/Anh/sanpham/@it.ANH" alt="@it.TENSP" style="width:70px;height:auto" />
+                            </td>
+                            <td>@it.TENSP</td>
+                            <td class="text-end">@string.Format("{0:N0} đ", it.DONGIA)</td>
+                            <td class="text-center">@it.SOLUONG</td>
+                            <td class="text-end">@string.Format("{0:N0} đ", it.ThanhTien)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-end gap-3 mt-3">
+            <div class="text-end">
+                <div><b>Tổng sản phẩm:</b> @Model.TongSanPham</div>
+                <div class="fs-5"><b>Tổng tiền:</b> @string.Format("{0:N0} đ", Model.TongTien)</div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <a class="btn btn-outline-secondary" href="@Url.Action("Index","GioHang")">Quay lại giỏ hàng</a>
+
+            @using (Html.BeginForm((ViewBag.IsMuaNgay == true) ? "ThanhToanMuaNgay" : "ThanhToan",
+                       "GioHang", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                if (ViewBag.IsMuaNgay == true)
+                {
+                    <input type="hidden" name="masp" value="@Model.Items[0].MASP" />
+                    <input type="hidden" name="soluong" value="@Model.Items[0].SOLUONG" />
+                }
+                else
+                {
+                    foreach (var it in Model.Items)
+                    {
+                        <input type="hidden" name="selectedItems" value="@it.MASP" />
+                    }
+                }
+
+                <button type="submit" class="btn btn-primary">Thanh toán</button>
+            }
+
+        </div>
+    </div>
+</main>

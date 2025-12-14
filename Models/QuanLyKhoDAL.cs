@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using WebDienThoai.Models;
+using WebDienThoai.Models.ViewModels;
 
 namespace WebDienThoai.DAL
 {
@@ -73,14 +74,14 @@ namespace WebDienThoai.DAL
             var list = new List<PhieuNhap>();
 
             var sql = @"
-SELECT pn.MAPHIEUNHAP, pn.ID, pn.NGAYNHAP, pn.NHACUNGCAP, pn.TONGGIA, pn.MAKHO,
-       k.TENKHO
-FROM dbo.PHIEUNHAP pn
-LEFT JOIN dbo.KHO k ON k.MAKHO = pn.MAKHO
-WHERE (@MAKHO IS NULL OR pn.MAKHO = @MAKHO)
-  AND (@TUNGAY IS NULL OR pn.NGAYNHAP >= @TUNGAY)
-  AND (@DENNGAY IS NULL OR pn.NGAYNHAP < DATEADD(DAY, 1, @DENNGAY))
-ORDER BY pn.NGAYNHAP DESC, pn.MAPHIEUNHAP DESC";
+                        SELECT pn.MAPHIEUNHAP, pn.ID, pn.NGAYNHAP, pn.NHACUNGCAP, pn.TONGGIA, pn.MAKHO,
+                               k.TENKHO
+                        FROM dbo.PHIEUNHAP pn
+                        LEFT JOIN dbo.KHO k ON k.MAKHO = pn.MAKHO
+                        WHERE (@MAKHO IS NULL OR pn.MAKHO = @MAKHO)
+                          AND (@TUNGAY IS NULL OR pn.NGAYNHAP >= @TUNGAY)
+                          AND (@DENNGAY IS NULL OR pn.NGAYNHAP < DATEADD(DAY, 1, @DENNGAY))
+                        ORDER BY pn.NGAYNHAP DESC, pn.MAPHIEUNHAP DESC";
 
             using (var conn = new SqlConnection(_cs))
             using (var cmd = new SqlCommand(sql, conn))
@@ -200,9 +201,9 @@ ORDER BY pn.NGAYNHAP DESC, pn.MAPHIEUNHAP DESC";
                     {
                         // 1) insert PHIEUNHAP
                         const string insertPN = @"
-INSERT INTO dbo.PHIEUNHAP (ID, NGAYNHAP, NHACUNGCAP, TONGGIA, MAKHO)
-VALUES (@ID, @NGAYNHAP, @NCC, @TONGGIA, @MAKHO);
-SELECT CAST(SCOPE_IDENTITY() AS INT);";
+                                                INSERT INTO dbo.PHIEUNHAP (ID, NGAYNHAP, NHACUNGCAP, TONGGIA, MAKHO)
+                                                VALUES (@ID, @NGAYNHAP, @NCC, @TONGGIA, @MAKHO);
+                                                SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
                         int newId;
                         using (var cmd = new SqlCommand(insertPN, conn, tx))
@@ -278,6 +279,55 @@ ELSE
                         throw;
                     }
                 }
+            }
+        }
+        public List<DonHangKhoItemVM> DonHangKho_List(int? maHD, DateTime? tuNgay, DateTime? denNgay, string trangThai)
+        {
+            var list = new List<DonHangKhoItemVM>();
+
+            using (var conn = new SqlConnection(_cs))
+            using (var cmd = new SqlCommand("dbo.usp_DonHangKho_List", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@MAHD", (object)maHD ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@TUNGAY", (object)tuNgay ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@DENNGAY", (object)denNgay ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@TRANGTHAI", string.IsNullOrWhiteSpace(trangThai) ? (object)DBNull.Value : trangThai);
+
+                conn.Open();
+                using (var rd = cmd.ExecuteReader())
+                {
+                    while (rd.Read())
+                    {
+                        list.Add(new DonHangKhoItemVM
+                        {
+                            MaHD = Convert.ToInt32(rd["MAHD"]),
+                            NgayLap = Convert.ToDateTime(rd["NGAYLAP"]),
+                            ThanhTien = Convert.ToDecimal(rd["THANHTIEN"]),
+                            PhuongThucThanhToan = rd["PHUONGTHUCTHANHTOAN"]?.ToString(),
+                            HoTen = rd["HOTEN"]?.ToString(),
+                            SDT = rd["SDT"]?.ToString(),
+                            DiaChi = rd["DIACHI"]?.ToString(),
+                            TrangThaiGiaoHang = rd["TRANGTHAI"]?.ToString(),
+                            NgayGiao = rd["NGAYGIAO"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rd["NGAYGIAO"])
+                        });
+                    }
+                }
+            }
+            return list;
+        }
+
+        public void DonHangKho_UpdateTrangThai(int maHD, string trangThaiMoi)
+        {
+            using (var conn = new SqlConnection(_cs))
+            using (var cmd = new SqlCommand("dbo.usp_DonHangKho_UpdateTrangThai", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@MAHD", SqlDbType.Int).Value = maHD;
+                cmd.Parameters.Add("@TRANGTHAI_MOI", SqlDbType.NVarChar, 50).Value = trangThaiMoi;
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
             }
         }
     }

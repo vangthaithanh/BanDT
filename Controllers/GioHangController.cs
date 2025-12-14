@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Web.Mvc;
 using WebDienThoai.Models;
+using WebDienThoai.Models.ViewModels;
 
 namespace WebDienThoai.Controllers
 {
@@ -176,10 +177,133 @@ namespace WebDienThoai.Controllers
             // Nếu bạn muốn hiện ngay tại trang chi tiết sản phẩm:
             // return RedirectToAction("ChiTietSanPham", "SanPham", new { id = masp });
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ThanhToanMuaNgay(int masp, int soluong = 1)
+        {
+            var tentk = Session["UserName"] as string; // đúng theo AccountController
+            if (string.IsNullOrWhiteSpace(tentk))
+            {
+                SetPopupError("Bạn cần đăng nhập trước khi mua ngay.");
+                //return RedirectToAction("Login", "Account");
+            }
+
+            if (soluong < 1) soluong = 1;
+
+            try
+            {
+                int? mahd = null;
+                decimal? thanhtien = null;
+
+                using (var conn = new SqlConnection(_connAdmin))
+                using (var cmd = new SqlCommand("dbo.sp_MuaNgay", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@TENTK", SqlDbType.VarChar, 100).Value = tentk;
+                    cmd.Parameters.Add("@MAKHO", SqlDbType.Int).Value = DBNull.Value; // hoặc MAKHO cụ thể
+                    cmd.Parameters.Add("@MASP", SqlDbType.Int).Value = masp;
+                    cmd.Parameters.Add("@SOLUONG", SqlDbType.Int).Value = soluong;
+
+                    conn.Open();
+                    using (var rd = cmd.ExecuteReader())
+                    {
+                        if (rd.Read())
+                        {
+                            if (rd["MAHD"] != DBNull.Value) mahd = Convert.ToInt32(rd["MAHD"]);
+                            if (rd["THANHTIEN"] != DBNull.Value) thanhtien = Convert.ToDecimal(rd["THANHTIEN"]);
+                        }
+                    }
+                }
+
+                SetPopupSuccess(mahd.HasValue
+                    ? $"Mua ngay thành công. Mã HĐ: {mahd} - Tổng tiền: {(thanhtien ?? 0):N0} đ"
+                    : "Mua ngay thành công.");
+            }
+            catch (SqlException ex)
+            {
+                // Nếu không đủ tồn / lỗi validate trong proc => sẽ rơi vào đây
+                SetPopupError("Mua ngay thất bại: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                SetPopupError("Mua ngay thất bại: " + ex.Message);
+            }
+
+            return MuaNgay(masp, soluong);
+        }
 
         // =========================
         // THANH TOÁN GIỎ HÀNG (dbo.sp_ThanhToan_GioHang) - Conn_Admin
         // =========================
+        public ActionResult XacNhanThanhToan(int[] selectedItems)
+        {
+            var tentk = Session["UserName"] as string;
+            if (string.IsNullOrWhiteSpace(tentk))
+            {
+                SetPopupError("Bạn cần đăng nhập trước khi thanh toán.");
+                return RedirectToAction("Login", "Account");
+            }
+
+            var cart = Session["GioHang"] as List<GioHang> ?? new List<GioHang>();
+            if (!cart.Any())
+            {
+                SetPopupError("Giỏ hàng trống.");
+                return RedirectToAction("Index");
+            }
+
+            if (selectedItems == null || selectedItems.Length == 0)
+            {
+                SetPopupError("Vui lòng chọn sản phẩm để thanh toán.");
+                return RedirectToAction("Index");
+            }
+
+            var picked = cart.Where(x => selectedItems.Contains(x.MASP)).ToList();
+            if (!picked.Any())
+            {
+                SetPopupError("Danh sách sản phẩm thanh toán không hợp lệ.");
+                return RedirectToAction("Index");
+            }
+
+            var vm = new CheckoutPreviewVM { Items = picked };
+            return View(vm); // Views/GioHang/XacNhanThanhToan.cshtml
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult XacNhanMuaNgay(int masp, int soluong = 1)
+        {
+            var tentk = Session["UserName"] as string;
+            if (string.IsNullOrWhiteSpace(tentk))
+            {
+                SetPopupError("Bạn cần đăng nhập trước khi mua.");
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (soluong < 1) soluong = 1;
+
+            var p = GetProductDetail(masp);
+            if (p == null)
+            {
+                SetPopupError("Không tìm thấy sản phẩm.");
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Dựng 1 “cart item” để dùng chung view preview
+            var item = new GioHang
+            {
+                MASP = p.MASP,
+                TENSP = p.TENSP,
+                ANH = p.ANH,
+                DONGIA = p.GIABAN,
+                SOLUONG = soluong
+            };
+
+            var vm = new CheckoutPreviewVM { Items = new List<GioHang> { item } };
+
+            // để preview biết đây là mua ngay (không phải giỏ hàng)
+            ViewBag.IsMuaNgay = true;
+            return View("XacNhanThanhToan", vm);
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ThanhToan(int[] selectedItems)

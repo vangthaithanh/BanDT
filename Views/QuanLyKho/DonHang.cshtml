@@ -1,0 +1,95 @@
+﻿@model WebDienThoai.Models.ViewModels.DonHangKhoListVM
+@{
+    ViewBag.Title = "Quản lý đơn hàng";
+    Layout = "~/Views/Shared/_LayoutQT.cshtml";
+}
+
+<div class="bg-white rounded-3 shadow-sm p-4">
+    <h4 class="mb-3">Quản lý đơn hàng</h4>
+    @Html.Partial("_ResultPopup")
+
+    @using (Html.BeginForm("DonHang", "QuanLyKho", FormMethod.Get, new { @class = "row g-3 mb-3" }))
+    {
+        <div class="col-md-3">
+            <label class="form-label">Mã HĐ</label>
+            <input type="number" name="maHD" class="form-control" value="@(Model.Filter.MaHD?.ToString() ?? "")" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Từ ngày</label>
+            <input type="date" name="tuNgay" class="form-control" value="@(Model.Filter.TuNgay?.ToString("yyyy-MM-dd") ?? "")" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Đến ngày</label>
+            <input type="date" name="denNgay" class="form-control" value="@(Model.Filter.DenNgay?.ToString("yyyy-MM-dd") ?? "")" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Trạng thái</label>
+            <select name="trangThai" class="form-select">
+                <option value="">Tất cả</option>
+                @foreach (var st in Model.TrangThaiOptions)
+                {
+                    <option value="@st" @(Model.Filter.TrangThai == st ? "selected" : "")>@st</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-12 d-flex gap-2">
+            <button class="btn btn-primary" type="submit">Lọc</button>
+            <a class="btn btn-outline-secondary" href="@Url.Action("DonHang","QuanLyKho")">Tải lại</a>
+        </div>
+    }
+
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>MAHD</th>
+                    <th>Ngày lập</th>
+                    <th>Khách</th>
+                    <th>SĐT</th>
+                    <th>Địa chỉ</th>
+                    <th class="text-end">Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày giao</th>
+                    <th>Duyệt</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var x in Model.Items)
+                {
+                    <tr>
+                        <td>@x.MaHD</td>
+                        <td>@x.NgayLap.ToString("dd/MM/yyyy")</td>
+                        <td>@x.HoTen</td>
+                        <td>@x.SDT</td>
+                        <td>@x.DiaChi</td>
+                        <td class="text-end">@string.Format("{0:N0} đ", x.ThanhTien)</td>
+                        <td><b>@x.TrangThaiGiaoHang</b></td>
+                        <td>@(x.NgayGiao.HasValue ? x.NgayGiao.Value.ToString("dd/MM/yyyy") : "—")</td>
+                        <td style="min-width:220px">
+                            @using (Html.BeginForm("CapNhatTrangThaiDonHang", "QuanLyKho", FormMethod.Post, new { @class = "d-flex gap-2" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="maHD" value="@x.MaHD" />
+
+                                <!-- giữ filter -->
+                                <input type="hidden" name="maHDFilter" value="@(Model.Filter.MaHD?.ToString() ?? "")" />
+                                <input type="hidden" name="tuNgay" value="@(Model.Filter.TuNgay?.ToString("yyyy-MM-dd") ?? "")" />
+                                <input type="hidden" name="denNgay" value="@(Model.Filter.DenNgay?.ToString("yyyy-MM-dd") ?? "")" />
+                                <input type="hidden" name="trangThai" value="@(Model.Filter.TrangThai ?? "")" />
+
+                                <select name="trangThaiMoi" class="form-select form-select-sm">
+                                    @foreach (var st in Model.TrangThaiOptions)
+                                    {
+                                        <option value="@st" @(x.TrangThaiGiaoHang == st ? "selected" : "")>@st</option>
+                                    }
+                                </select>
+                                <button class="btn btn-sm btn-success" type="submit">Lưu</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -137,6 +137,7 @@
     <Compile Include="Models\CartItem.cs" />
     <Compile Include="Models\ChiTietPN.cs" />
     <Compile Include="Models\DoiMatKhau.cs" />
+    <Compile Include="Models\DonHangKhoVM.cs" />
     <Compile Include="Models\GioHangModel.cs" />
     <Compile Include="Models\Kho.cs" />
     <Compile Include="Models\LichSuDonHang.cs" />
@@ -148,10 +149,12 @@
     <Compile Include="Models\TonKho.cs" />
     <Compile Include="Models\TonKhoVM.cs" />
     <Compile Include="Models\UuDai.cs" />
+    <Compile Include="Models\ViewModels.cs" />
     <Compile Include="Models\XemChiTietModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".gitignore" />
     <Content Include="Content\Anh\logo\chuamua.png" />
     <Content Include="Content\Anh\logo\footer1.png" />
     <Content Include="Content\Anh\logo\footer2.png" />
@@ -326,6 +329,8 @@
     <Content Include="Views\Account\DoiMatKhau.cshtml" />
     <Content Include="Views\DonHang\LichSuMuaHang.cshtml" />
     <Content Include="Views\DonHang\ChiTiet.cshtml" />
+    <Content Include="Views\GioHang\XacNhanThanhToan.cshtml" />
+    <Content Include="Views\QuanLyKho\DonHang.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
