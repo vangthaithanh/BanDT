@@ -1,0 +1,50 @@
+﻿@inherits System.Web.Mvc.WebViewPage
+
+@{
+    var type = TempData["PopupType"] as string;   // "success" | "error"
+    var msg = TempData["PopupMsg"] as string;
+
+    var isShow = !string.IsNullOrEmpty(type) && !string.IsNullOrEmpty(msg);
+    var isSuccess = string.Equals(type, "success", StringComparison.OrdinalIgnoreCase);
+
+    var title = isSuccess ? "Thành công" : "Thất bại";
+    var iconClass = isSuccess ? "fas fa-check-circle" : "fas fa-times-circle";
+    var textClass = isSuccess ? "text-success" : "text-danger";
+}
+
+@if (isShow)
+{
+    <div class="modal fade" id="resultModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content rounded-4 shadow">
+                <div class="modal-body text-center p-4">
+                    <div class="display-4 mb-3 @textClass">
+                        <i class="@iconClass"></i>
+                    </div>
+                    <h4 class="mb-2">@title</h4>
+                    <p class="mb-0 fs-5">@msg</p>
+                </div>
+                <div class="modal-footer justify-content-center border-0 pb-4">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+                        Đóng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                if (window.bootstrap && bootstrap.Modal) {
+                    var modal = new bootstrap.Modal(document.getElementById('resultModal'));
+                    modal.show();
+                } else {
+                    alert(@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(msg)));
+                }
+            } catch (e) {
+                alert(@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(msg)));
+            }
+        });
+    </script>
+}

@@ -2,59 +2,264 @@
 
 @{
     ViewBag.Title = "Trang chủ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 
-<div class="product-list">
-    @foreach (var sp in Model)
-    {
-        var url = Url.Content("~/Content/Anh/sanpham/" + sp.ANH);
-        <a class="no-underline-link" href="@Url.Action("ChiTietSanPham", "Home", new { id = sp.MASP })">
-            <div class="product-card">
-                @* Debug đường dẫn ảnh, nếu không cần nữa có thể xoá *@
-                @* <p>@url</p> *@
+<div class="container">
+    <div class="row mb-5 mt-1 g-4 align-items-stretch" >
+        <!-- LEFT: CAROUSEL -->
+        <div class="col-12 col-lg-8">
+            <div class="hp-hero-card h-100">
+                <div id="productCarousel"
+                     class="carousel slide hp-hero-carousel"
+                     data-bs-ride="carousel"
+                     data-bs-interval="3500"
+                     data-bs-pause="false"
+                     data-bs-wrap="true">
 
-                <img src="@url" alt="@sp.TENSP" />
-                <h3>@sp.TENSP</h3>
-                <div class="price">
-                    @string.Format("{0:N0} đ", sp.GIABAN)
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="@Url.Content("~/Content/Anh/Panner/trangchu1.jpg")" class="d-block w-100" alt="Slide 1">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="@Url.Content("~/Content/Anh/Panner/trangchu2.jpg")" class="d-block w-100" alt="Slide 2">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="@Url.Content("~/Content/Anh/Panner/trangchu3.jpg")" class="d-block w-100" alt="Slide 3">
+                        </div>
+                    </div>
+
+                    <button class="carousel-control-prev hp-hero-arrow" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next hp-hero-arrow" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+
+                <!-- Tabs caption dưới carousel -->
+                <div class="hp-hero-tabs"style="background-color: #eae2d7;">
+                    <div class="hp-hero-tab active" role="button" tabindex="0">
+                        <div class="hp-hero-tab-title">iPhone 16 ProMax</div>
+                        <div class="hp-hero-tab-sub">Mua ngay</div>
+                    </div>
+                    <div class="hp-hero-tab" role="button" tabindex="0">
+                        <div class="hp-hero-tab-title">Galaxy S25 Ultra</div>
+                        <div class="hp-hero-tab-sub">Giá tốt</div>
+                    </div>
+                    <div class="hp-hero-tab" role="button" tabindex="0">
+                        <div class="hp-hero-tab-title">MacBook Air M4</div>
+                        <div class="hp-hero-tab-sub">Nhận Airpod 4</div>
+                    </div>
                 </div>
             </div>
-            </a>
-            }
+        </div>
+
+        <!-- RIGHT: TIN CÔNG NGHỆ -->
+        <div class="col-12 col-lg-4">
+            <div class="hp-news h-100">
+                <div class="hp-news-head">
+                    <span class="hp-news-icon">📢</span>
+                    <span class="hp-news-title">Tin công nghệ</span>
+                </div>
+
+                <div class="hp-news-list">
+
+                    <a class="hp-news-item" href="#">
+                        <img class="hp-news-thumb" src="@Url.Content("~/Content/Anh/Panner/tincongnghe1.webp")" alt="Tin 1">
+                        <div class="hp-news-meta">
+                            <div class="hp-news-text">Hướng dẫn mua trả góp bằng thẻ tín dụng</div>
+                            <div class="hp-news-date">29/05/2025</div>
+                        </div>
+                    </a>
+
+                    <a class="hp-news-item" href="#">
+                        <img class="hp-news-thumb" src="@Url.Content("~/Content/Anh/Panner/tincongnghe2.webp")" alt="Tin 2">
+                        <div class="hp-news-meta">
+                            <div class="hp-news-text">Thu cũ đổi mới, hoàn tiền 90%</div>
+                            <div class="hp-news-date">25/05/2025</div>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+        </div>
     </div>
 
+    @*các card điện thoại*@ 
+    <div class="box1">
+        <div class="d-flex p-3">
+            <span style="font-family: 'Font Awesome 6 Free'; font-weight: 900; padding-top: 10px;">&#xf005;</span>
+            <h4 class="m-2 fw-bold" style="color: #aa1945;">Sản phẩm nổi bật</h4>
+        </div>
+        <div class="box">
+            <div id="productRow" class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3">
+                @foreach (var sp in Model)
+                {
+                    var url = Url.Content("~/Content/Anh/sanpham/" + sp.ANH);
+
+                    <div class="col mb-3">
+                        <div class="card border rounded shadow h-100">
+                            @* ảnh *@
+                            <a href="@Url.Action("ChiTietSanPham", "Home", new { id = sp.MASP })"
+                               class="product-link text-decoration-none text-dark">
+                                <div class="position-relative overflow-hidden">
+                                    @* biến tên *@
+                                    <img src="@url" class="card-img-top" alt="@sp.TENSP" />
+                                    <span class="position-absolute top-0 start-0 badge bg-danger mt-2 ms-2">-24%</span>
+                                </div>
+                                <div class="card-body text-start">
+                                    <h5 class="card-title">@sp.TENSP</h5>
+                                    <p class="text-decoration-line-through text-muted">33,000,000 đ</p>
+                                    @* biêns giá bán *@
+                                    <p class="text-danger fs-4 fw-bold">@string.Format("{0:N0} đ", sp.GIABAN)</p>
+                                    <small class="text-muted">👁️ 3,100 lượt xem</small>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
-    .product-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
-        padding: 16px 24px;
-    }
-
-    .product-card {
-        width: 220px;
-        border-radius: 12px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        padding: 12px;
+            /* ===== HERO (Carousel + Tabs) ===== */
+    .hp-hero-card{
+        border-radius: 18px;
+        overflow: hidden;
         background: #fff;
-        margin-bottom: 16px;
+        border: 1px solid rgba(0,0,0,0.06);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
     }
 
-        .product-card img {
-            width: 100%;
-            height: auto;
-            display: block;
-            border-radius: 8px;
-        }
+    .hp-hero-carousel .carousel-inner{
+        background: #d9d9d9;
+    }
 
-        .product-card h3 {
-            margin: 8px 0 4px;
-            font-size: 14px;
-        }
+    .hp-hero-carousel .carousel-item img{
+        width: 100%;
+        height: 360px;           
+        object-fit: cover;
+        display: block;
+    }
 
-        .product-card .price {
-            color: #e21;
-            font-weight: bold;
-        }
+    /* mũi tên mờ như ảnh */
+    .hp-hero-arrow{
+        opacity: .7;
+    }
+    .hp-hero-arrow:hover{
+        opacity: 1;
+    }
+
+    /* Tabs dưới carousel */
+    .hp-hero-tabs{
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        background: #fff;
+        border-top: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .hp-hero-tab{
+        padding: 14px 10px;
+        text-align: center;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .hp-hero-tab-title{
+        font-weight: 700;
+        font-size: 18px;
+    }
+
+    .hp-hero-tab-sub{
+        margin-top: 4px;
+        font-size: 16px;
+    }
+
+    .hp-hero-tab.active::after{
+        content: "";
+        position: absolute;
+        left: 16%;
+        right: 16%;
+        bottom: 0;
+        height: 3px;
+        background: #d9a56b;     /* gạch chân vàng cam như ảnh */
+        border-radius: 3px;
+    }
+
+    /* ===== NEWS RIGHT ===== */
+    .hp-news{
+        border-radius: 16px;
+    }
+
+    .hp-news-head{
+        background: #eae2d7;
+        border-radius: 14px;
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .hp-news-icon{
+        font-size: 22px;
+    }
+
+    .hp-news-title{
+        font-weight: 800;
+        font-size: 22px;
+        color: #b61d4c; /* hồng tím như ảnh */
+    }
+
+    .hp-news-list{
+        padding-top: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .hp-news-item{
+        display: flex;
+        gap: 14px;
+        text-decoration: none;
+        color: #111;
+    }
+
+    .hp-news-thumb{
+        width: 170px;
+        height: 96px;
+        border-radius: 12px;
+        object-fit: cover;
+        flex: 0 0 auto;
+    }
+
+    .hp-news-meta{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding-top: 6px;
+    }
+
+    .hp-news-text{
+        font-weight: 700;
+        font-size: 18px;
+        line-height: 1.2;
+    }
+
+    .hp-news-date{
+        font-size: 16px;
+        color: #555;
+    }
+
+    /* Responsive */
+    @@media (max-width: 992px){
+        .hp-hero-carousel .carousel-item img{ height: 280px; }
+        .hp-news-thumb{ width: 150px; height: 86px; }
+    }
 </style>

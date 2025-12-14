@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Web;
+using System.Data.SqlClient;
 using System.Web.Mvc;
 using WebDienThoai.DAL;
 using WebDienThoai.Models;
@@ -12,20 +12,20 @@ namespace WebDienThoai.Controllers
 {
     public class QuanLyKhoController : Controller
     {
-        // GET: QuanLyKho
         private QuanLyKhoDAL _dal;
 
         private string GetConnStr()
         {
+            // Quản lý kho = nghiệp vụ admin => default Conn_Admin
             var connName = Session["ConnName"] as string;
             if (string.IsNullOrWhiteSpace(connName))
-                connName = "Conn_Khach";
+                connName = "Conn_Admin";
 
             var cs = ConfigurationManager.ConnectionStrings[connName]
-                  ?? ConfigurationManager.ConnectionStrings["Conn_Khach"];
+                  ?? ConfigurationManager.ConnectionStrings["Conn_Admin"];
 
             if (cs == null || string.IsNullOrWhiteSpace(cs.ConnectionString))
-                throw new InvalidOperationException("Thiếu connection string 'Conn_Khach' (hoặc ConnName) trong Web.config.");
+                throw new InvalidOperationException("Thiếu connection string 'Conn_Admin' (hoặc ConnName) trong Web.config.");
 
             return cs.ConnectionString;
         }
@@ -36,10 +36,8 @@ namespace WebDienThoai.Controllers
             base.OnActionExecuting(filterContext);
         }
 
-        // /QuanLyKho
         public ActionResult Index()
         {
-            // breadcrumb
             ViewBag.BreadcrumbList = new List<WebDienThoai.Models.BreadcrumbItem>
             {
                 new WebDienThoai.Models.BreadcrumbItem { Text = "Trang chủ", Action = "Index", Controller = "Home" },
@@ -50,10 +48,8 @@ namespace WebDienThoai.Controllers
             return View(kho);
         }
 
-        // /QuanLyKho/TonKho?maKho=K001
         public ActionResult TonKho(string maKho)
         {
-            // breadcrumb
             ViewBag.BreadcrumbList = new List<WebDienThoai.Models.BreadcrumbItem>
             {
                 new WebDienThoai.Models.BreadcrumbItem { Text = "Trang chủ", Action = "Index", Controller = "Home" },
@@ -75,10 +71,8 @@ namespace WebDienThoai.Controllers
             return View(vm);
         }
 
-        // /QuanLyKho/PhieuNhap?maKho=K001&tuNgay=2025-12-01&denNgay=2025-12-04
         public ActionResult PhieuNhap(string maKho, DateTime? tuNgay, DateTime? denNgay)
         {
-            // breadcrumb
             ViewBag.BreadcrumbList = new List<WebDienThoai.Models.BreadcrumbItem>
             {
                 new WebDienThoai.Models.BreadcrumbItem { Text = "Trang chủ", Action = "Index", Controller = "Home" },
@@ -98,10 +92,8 @@ namespace WebDienThoai.Controllers
             return View(vm);
         }
 
-        // /QuanLyKho/ChiTietPhieuNhap/5
         public ActionResult ChiTietPhieuNhap(int id)
         {
-            // breadcrumb
             ViewBag.BreadcrumbList = new List<WebDienThoai.Models.BreadcrumbItem>
             {
                 new WebDienThoai.Models.BreadcrumbItem { Text = "Trang chủ", Action = "Index", Controller = "Home" },
@@ -123,7 +115,6 @@ namespace WebDienThoai.Controllers
         [HttpGet]
         public ActionResult TaoPhieuNhap()
         {
-            // breadcrumb
             ViewBag.BreadcrumbList = new List<WebDienThoai.Models.BreadcrumbItem>
             {
                 new WebDienThoai.Models.BreadcrumbItem { Text = "Trang chủ", Action = "Index", Controller = "Home" },
@@ -143,9 +134,10 @@ namespace WebDienThoai.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult TaoPhieuNhap(CreatePhieuNhapVM vm)
         {
+            // luôn đổ lại KhoList để View không lỗi khi return
             vm.KhoList = _dal.GetKhoAll();
 
-            // validate nhanh
+            // ===== validate form =====
             if (string.IsNullOrWhiteSpace(vm.MAKHO))
                 ModelState.AddModelError("MAKHO", "Vui lòng chọn kho.");
 
@@ -163,16 +155,30 @@ namespace WebDienThoai.Controllers
             {
                 if (string.IsNullOrWhiteSpace(vm.Items[i].MASP))
                     ModelState.AddModelError($"Items[{i}].MASP", "Vui lòng nhập MASP.");
+
                 if (vm.Items[i].SOLUONG <= 0)
                     ModelState.AddModelError($"Items[{i}].SOLUONG", "Số lượng phải >= 1.");
+
                 if (vm.Items[i].GIANHAP <= 0)
                     ModelState.AddModelError($"Items[{i}].GIANHAP", "Giá nhập phải > 0.");
+            }
+
+            // ===== bắt buộc đăng nhập vì PHIEUNHAP.ID NOT NULL =====
+            if (Session["UserId"] == null)
+            {
+                ModelState.AddModelError("", "Bạn cần đăng nhập (có ID người tạo) để tạo phiếu nhập.");
+                return View(vm);
             }
 
             if (!ModelState.IsValid) return View(vm);
 
             try
             {
+                int userId = Convert.ToInt32(Session["UserId"]);   // INT
+                int maKhoInt = Convert.ToInt32(vm.MAKHO);          // INT
+                DateTime ngayNhap = vm.NGAYNHAP ?? DateTime.Now;   // FIX: thiếu biến này trong code bạn
+
+                // Giữ MASP dạng string, DAL sẽ Convert.ToInt32 để insert
                 var items = vm.Items.Select(x => new ChiTietPN
                 {
                     MASP = x.MASP.Trim(),
@@ -180,24 +186,30 @@ namespace WebDienThoai.Controllers
                     GIANHAP = x.GIANHAP
                 }).ToList();
 
-                var ngayNhap = vm.NGAYNHAP ?? DateTime.Now;
-
-                // nếu bạn có login: var userId = (string)Session["ID"];
-                string userId = null;
-
                 int newId = _dal.CreatePhieuNhap(
                     userId,
                     ngayNhap,
                     vm.NHACUNGCAP.Trim(),
-                    vm.MAKHO,
+                    maKhoInt,
                     items
                 );
 
+                TempData["Success"] = "Tạo phiếu nhập thành công.";
                 return RedirectToAction("ChiTietPhieuNhap", new { id = newId });
             }
-            catch
+            catch (FormatException)
             {
-                ModelState.AddModelError("", "Có lỗi khi tạo phiếu nhập. Vui lòng thử lại.");
+                ModelState.AddModelError("", "MASP/MAKHO phải là số (int). Vui lòng kiểm tra lại.");
+                return View(vm);
+            }
+            catch (SqlException ex)
+            {
+                ModelState.AddModelError("", "Có lỗi khi tạo phiếu nhập (SQL): " + ex.Message);
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Có lỗi khi tạo phiếu nhập: " + ex.Message);
                 return View(vm);
             }
         }

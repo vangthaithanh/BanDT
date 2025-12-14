@@ -6,6 +6,8 @@
     var userName = Session["UserName"] as string;
     var hoTen = Session["HoTen"] as string;
     var role = Session["Role"] as string ?? "KHACH";
+    //tạo header riêng cho quản trị
+    //var isStaff = !string.IsNullOrEmpty(userName) && role != "KHACH";
 
     // Get cart count from session
     var cart = Session["GioHang"] as List<GioHang>;
@@ -18,80 +20,76 @@
         }
     }
 }
-<nav class="navbar navbar-expand-lg header" style="background-color: #f4ebdf;">
+<nav class="navbar navbar-expand-lg header" style="background-color: #eae2d7;">
     <a class="navbar-brand" href='@Url.Action("Index", "Home")'>
         <img class="header-img" src="~/Anh/logo/headerlogo.png" alt="Logo" />
     </a>
-    <div class="input-group ms-5" style="max-width: 380px;">
-        <!-- Rút ngắn kích thước thanh tìm kiếm -->
-        <input class="form-control search-input" type="search" placeholder="Bạn muốn mua gì hôm nay?" aria-label="Search">
-        <button class="input-group-text search-button">
-            <!-- Biểu tượng tìm kiếm từ Font Awesome -->
-            <i class="fa-solid fa-magnifying-glass"></i>
+    @*tìm kiếm*@
+    @using (Html.BeginForm("TimKiem", "Home", FormMethod.Get, new { @class = "input-group ms-5", style = "max-width: 380px;" }))
+    {
+        <input class="form-control rounded-start-pill border-end-0"
+               type="search"
+               name="q"
+               value="@(Request["q"] ?? "")"
+               placeholder="Bạn muốn mua gì hôm nay?"
+               aria-label="Search"
+               style="border-color: #e0e0e0;">
+        <button class="input-group-text rounded-end-pill"
+                type="submit"
+                style="border-left: 0; background-color: #fff; border-color: #e0e0e0;">
+            <i class="bi bi-search"></i>
         </button>
-    </div>
+    }
+    @*giỏ hàng*@
     <ul class="navbar-nav ms-auto me-2">
-        <li class="nav-item header-item me-4">
-            <span style="font-family: 'Font Awesome 6 Free'; font-weight: 900;">&#xf07a;</span>
-            <a class="nav-link" href='@Url.Action("Index", "GioHang")'>
-                Giỏ hàng
-                <span class="badge bg-secondary ms-2">@cartCount</span>
+        <li class="nav-item header-item me-2 d-flex align-items-center">
+            <a class="nav-link align-items-center  m-2  d-flex" href='@Url.Action("Index", "GioHang")'>
+                <div class="d-flex align-items-center me-3">
+                    <span class="fs-5 ms-2" style="font-family: 'Font Awesome 6 Free'; font-weight: 900;">&#xf07a;</span>
+                    <span class="text-dark fw-bold ms-2" style="line-height: 1.1;">
+                        Giỏ<br>hàng
+                    </span>
+                    <div class="d-flex justify-content-center ms-2 align-items-center bg-secondary text-white rounded"
+                         style="min-width: 25px; height: 25px;">
+                        <span class="m-0 p-0 fs-6">@cartCount</span>
+                    </div>
+                </div>
             </a>
         </li>
-        <li class="nav-item header-item me-4 danh-muc-dropdown">
-            <a class="nav-link d-flex align-items-center">
+        @*danh mục*@
+        <li class="nav-item header-item me-2 danh-muc-dropdown">
+            <a class="nav-link d-flex align-items-center" href="javascript:void(0);">
                 <span style="font-family: 'Font Awesome 6 Free'; font-weight: 900;">&#xf0ca;</span>
                 <span class="ms-2 fw-bold">Danh mục</span>
             </a>
-
-            <!-- MENU THẢ XUỐNG: sinh động bằng foreach -->
             @Html.Action("MenuLoai", "Home")
-
         </li>
 
-
+        @*đăng nhập*@
         @if (Session["UserName"] == null)
         {
             <!-- CHƯA ĐĂNG NHẬP -->
-            <li class="nav-item header-item">
+            <li class="nav-item header-item me-5">
                 <span style="font-family: 'Font Awesome 6 Free'; font-weight: 900;">&#xf2bd;</span>
                 <a class="nav-link" href='@Url.Action("Login", "Account")' id="loginLink">Đăng nhập</a>
             </li>
         }
         else
         {
-            <!-- ĐÃ ĐĂNG NHẬP -->
-            if (role == "ADMIN")
+            if (role == "ADMIN" || role == "NVKHO" || role == "NVSP")
             {
-                <li class="nav-item header-item">
-                    <a class="nav-link" href="@Url.Action("Index", "QuanLyNhanSu")">Quản lý nhân sự</a>
-                </li>
-                <li class="nav-item header-item">
-                    <a class="nav-link" href="@Url.Action("Index", "QuanLyKho")">Quản lý kho</a>
-                </li>
-
-                <li class="nav-item header-item">
-                    <a class="nav-link" href="@Url.Action("Index", "QuanLySanPham")">Quản lý sản phẩm</a>
-                </li>
-            }
-            else if (role == "NVKHO")
-            {
-                <li class="nav-item header-item">
-                    <a class="nav-link" href="@Url.Action("Index", "QuanLyKho")">Quản lý kho</a>
-                </li>
-            }
-            else if (role == "NVSP")
-            {
-                <li class="nav-item header-item">
-                    <a class="nav-link" href="@Url.Action("Index", "QuanLySanPham")">Quản lý sản phẩm</a>
+                <li class="nav-item header-item me-2">
+                    <a class="nav-link" href="@Url.Action("QuanTri", "Home")">Quản trị</a>
                 </li>
             }
 
-            <li class="nav-item header-item">
-                <span class="nav-link">Xin chào, @(!string.IsNullOrEmpty(hoTen) ? hoTen : userName)</span>
-            </li>
-            <li class="nav-item header-item">
-                <a class="nav-link" href="@Url.Action("Logout", "Account")">Đăng xuất</a>
+            <li class="nav-item header-item me-2">
+                <a class="nav-link" href="@Url.Action("ThongTinCaNhan", "Account")"
+                                    @*href="@Url.Action("Backup", "Account")*@>
+                    <i class="fa-solid fa-user"></i>
+                    <span class="fw-bold">@(!string.IsNullOrEmpty(hoTen) ? hoTen : userName)</span>
+                </a>
+
             </li>
         }
     </ul>

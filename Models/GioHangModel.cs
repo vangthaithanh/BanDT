@@ -11,5 +11,6 @@ namespace WebDienThoai.Models
         public float TONGTIEN { get; set; }
         public int SOLUONG { get; set; }
         public float DONGIA { get; set; }
+        public string ANH { get; set; }
     }
 }

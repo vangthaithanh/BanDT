@@ -1,28 +1,137 @@
-﻿<footer class="footer-shadow container-fluid mt-5" style="background-color: #f4ebdf;">
-    <div class="row text-center text-md-start">
-        <div class="col-md-3">
-            <h5><strong>Tổng đài hỗ trợ</strong></h5>
-            <p>Hotline: 2001231006</p>
-            <p>Mua hàng: 2001230943</p>
-            <p>Bảo hành: 2001230989</p>
-        </div>
-        <div class="col-md-3">
-            <h5><strong>Chính sách</strong></h5>
-            <p>Đổi trả 7 ngày</p>
-            <p>Bảo hành 12 tháng</p>
-            <p>Trả góp 0%</p>
-        </div>
-        <div class="col-md-3">
-            <h5><strong>Hệ thống cửa hàng</strong></h5>
-            <p>140 Lê Trọng Tấn, Q.Tân Phú</p>
-            <p>56 Nguyễn Huệ, Q.1</p>
-        </div>
-        <div class="col-md-3">
-            <h5><strong>Kết nối</strong></h5>
-            <i class="fab fa-facebook fa-lg mx-2"></i>
-            <i class="fab fa-instagram fa-lg mx-2"></i>
-            <i class="fab fa-twitter fa-lg mx-2"></i>
+﻿@* _Footer.cshtml *@
+<footer class="footer-shadow site-footer mt-5">
+    <div class="container py-4 py-md-5">
+        <div class="row gy-4">
+
+            <!-- LEFT -->
+            <div class="col-12 col-md-4">
+                <h5 class="footer-title">Tổng đài hỗ trợ</h5>
+
+                <div class="footer-links">
+                    <a href="tel:2001231006">Hotline</a>
+                    <a href="tel:2001230943">Mua hàng</a>
+                    <a href="tel:2001230989">Bảo Hành</a>
+                </div>
+
+                <h5 class="footer-title mt-4">Kết nối</h5>
+                <div class="footer-social">
+                    <a class="social-btn fb" href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a class="social-btn wa" href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <a class="social-btn ig" href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a class="social-btn tw" href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+
+            <!-- MIDDLE -->
+            <div class="col-12 col-md-4">
+                <h5 class="footer-title">Thông tin về chính sách</h5>
+
+                <div class="footer-links">
+                    <a href="#">Mua hàng và thanh toán online</a>
+                    <a href="#">Mua hàng và trả góp</a>
+                    <a href="#">Chính sách giao hàng</a>
+                    <a href="#">Chính sách đổi trả</a>
+                    <a href="#">Trung tâm bảo hành</a>
+                </div>
+            </div>
+
+            <!-- RIGHT -->
+            <div class="col-12 col-md-4">
+                <h5 class="footer-title">Hệ thống cửa hàng</h5>
+
+                <div class="footer-address">
+                    <p>140 Lê Trọng Tấn, Tân Phú, TP.Hồ Chí Minh</p>
+                    <p>100 Tân Kỳ Tân Quý, Tân Phú, TP.Hồ Chí Minh</p>
+                </div>
+
+                <h5 class="footer-title mt-4">Phương thức thanh toán</h5>
+                <div class="footer-payments">
+                    <i class="fab fa-cc-mastercard" aria-label="Mastercard"></i>
+                    <i class="fab fa-cc-amex" aria-label="Amex"></i>
+                    <i class="fab fa-cc-visa" aria-label="Visa"></i>
+                    <i class="fab fa-cc-discover" aria-label="Discover"></i>
+                    <i class="fab fa-cc-paypal" aria-label="PayPal"></i>
+                </div>
+            </div>
+
         </div>
     </div>
 </footer>
 
+<style>
+    .site-footer {
+        background: #f4ebdf;
+    }
+
+    .footer-shadow {
+        box-shadow: 0 4px 14px rgba(0,0,0,.10);
+    }
+
+    .footer-title {
+        font-weight: 800;
+        margin: 0 0 14px 0;
+    }
+
+    .footer-links {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+        .footer-links a {
+            color: #111;
+            text-decoration: none;
+        }
+
+            .footer-links a:hover {
+                text-decoration: underline;
+            }
+
+    .footer-social {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-top: 6px;
+    }
+
+    .social-btn {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        color: #fff;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+        .social-btn.fb {
+            background: #1877f2;
+        }
+
+        .social-btn.wa {
+            background: #25d366;
+        }
+
+        .social-btn.ig {
+            background: #e1306c;
+        }
+
+        .social-btn.tw {
+            background: #1da1f2;
+        }
+
+    .footer-address p {
+        margin: 0 0 12px 0;
+    }
+
+    .footer-payments {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        margin-top: 6px;
+        font-size: 34px;
+    }
+</style>

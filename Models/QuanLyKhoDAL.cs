@@ -173,65 +173,98 @@ ORDER BY pn.NGAYNHAP DESC, pn.MAPHIEUNHAP DESC";
             return list;
         }
 
-        // ===== CREATE PHIEU NHAP (Transaction + update TONKHO) =====
-        public int CreatePhieuNhap(string idNguoiTao, DateTime ngayNhap, string nhaCungCap, string maKho, List<ChiTietPN> items)
+        // đổi signature: idNguoiTao int? , maKho int
+        public int CreatePhieuNhap(int idNguoiTao, DateTime ngayNhap, string nhaCungCap, int maKho, List<ChiTietPN> items)
         {
-            if (items == null || items.Count == 0) throw new ArgumentException("Items rỗng.");
+            if (items == null || items.Count == 0)
+                throw new ArgumentException("Items rỗng.");
 
-            // tính tổng
-            decimal tongGia = 0;
-            foreach (var it in items) tongGia += (decimal)it.SOLUONG * it.GIANHAP;
+            if (string.IsNullOrWhiteSpace(nhaCungCap))
+                throw new ArgumentException("Nhà cung cấp rỗng.");
+
+            decimal tongGia = 0m;
+            foreach (var it in items)
+                tongGia += (decimal)it.SOLUONG * it.GIANHAP;
 
             using (var conn = new SqlConnection(_cs))
             {
                 conn.Open();
+
+                // đảm bảo rollback khi gặp lỗi SQL
+                using (var cmdXact = new SqlCommand("SET XACT_ABORT ON;", conn))
+                    cmdXact.ExecuteNonQuery();
+
                 using (var tx = conn.BeginTransaction())
                 {
                     try
                     {
-                        // 1) insert PHIEUNHAP lấy identity
-                        var insertPN = @"
-                                        INSERT INTO dbo.PHIEUNHAP (ID, NGAYNHAP, NHACUNGCAP, TONGGIA, MAKHO)
-                                        VALUES (@ID, @NGAYNHAP, @NCC, @TONGGIA, @MAKHO);
-                                        SELECT CAST(SCOPE_IDENTITY() AS INT);";
+                        // 1) insert PHIEUNHAP
+                        const string insertPN = @"
+INSERT INTO dbo.PHIEUNHAP (ID, NGAYNHAP, NHACUNGCAP, TONGGIA, MAKHO)
+VALUES (@ID, @NGAYNHAP, @NCC, @TONGGIA, @MAKHO);
+SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
                         int newId;
                         using (var cmd = new SqlCommand(insertPN, conn, tx))
                         {
-                            cmd.Parameters.AddWithValue("@ID", (object)idNguoiTao ?? DBNull.Value);
-                            cmd.Parameters.AddWithValue("@NGAYNHAP", ngayNhap);
-                            cmd.Parameters.AddWithValue("@NCC", nhaCungCap);
-                            cmd.Parameters.AddWithValue("@TONGGIA", tongGia);
-                            cmd.Parameters.AddWithValue("@MAKHO", maKho);
+                            cmd.Parameters.Add("@ID", SqlDbType.Int).Value = idNguoiTao;
+                            cmd.Parameters.Add("@NGAYNHAP", SqlDbType.DateTime).Value = ngayNhap;
+
+                            cmd.Parameters.Add("@NCC", SqlDbType.NVarChar, 100).Value = nhaCungCap.Trim();
+
+                            var pTong = cmd.Parameters.Add("@TONGGIA", SqlDbType.Decimal);
+                            pTong.Precision = 18;
+                            pTong.Scale = 2;
+                            pTong.Value = tongGia;
+
+                            cmd.Parameters.Add("@MAKHO", SqlDbType.Int).Value = maKho;
+
                             newId = (int)cmd.ExecuteScalar();
                         }
 
                         // 2) insert CHITIETPN + 3) upsert TONKHO
+                        const string insertCT = @"
+INSERT INTO dbo.CHITIETPN (MAPHIEUNHAP, MASP, SOLUONG, GIANHAP)
+VALUES (@MAPN, @MASP, @SL, @GIA);";
+
+                        const string upsertTon = @"
+IF EXISTS (SELECT 1 FROM dbo.TONKHO WHERE MAKHO = @MAKHO AND MASP = @MASP)
+    UPDATE dbo.TONKHO SET SOLUONG = SOLUONG + @SL WHERE MAKHO = @MAKHO AND MASP = @MASP;
+ELSE
+    INSERT INTO dbo.TONKHO (MASP, MAKHO, SOLUONG) VALUES (@MASP, @MAKHO, @SL);";
+
                         foreach (var it in items)
                         {
-                            var insertCT = @"INSERT INTO dbo.CHITIETPN (MAPHIEUNHAP, MASP, SOLUONG, GIANHAP)
-                                             VALUES (@MAPN, @MASP, @SL, @GIA)";
+                            if (it == null) continue;
+
+                            if (!int.TryParse(it.MASP?.ToString(), out int maspInt))
+                                throw new FormatException($"MASP không hợp lệ: '{it?.MASP}' (phải là số).");
+
+                            if (it.SOLUONG <= 0)
+                                throw new ArgumentException($"Số lượng không hợp lệ cho MASP {maspInt}.");
+
+                            if (it.GIANHAP <= 0)
+                                throw new ArgumentException($"Giá nhập không hợp lệ cho MASP {maspInt}.");
+
                             using (var cmd = new SqlCommand(insertCT, conn, tx))
                             {
-                                cmd.Parameters.AddWithValue("@MAPN", newId);
-                                cmd.Parameters.AddWithValue("@MASP", it.MASP);
-                                cmd.Parameters.AddWithValue("@SL", it.SOLUONG);
-                                cmd.Parameters.AddWithValue("@GIA", it.GIANHAP);
+                                cmd.Parameters.Add("@MAPN", SqlDbType.Int).Value = newId;
+                                cmd.Parameters.Add("@MASP", SqlDbType.Int).Value = maspInt;
+                                cmd.Parameters.Add("@SL", SqlDbType.Int).Value = it.SOLUONG;
+
+                                var pGia = cmd.Parameters.Add("@GIA", SqlDbType.Decimal);
+                                pGia.Precision = 18;
+                                pGia.Scale = 2;
+                                pGia.Value = it.GIANHAP;
+
                                 cmd.ExecuteNonQuery();
                             }
 
-                            // upsert TONKHO
-                            var upsertTon = @"
-                                            IF EXISTS (SELECT 1 FROM dbo.TONKHO WHERE MAKHO = @MAKHO AND MASP = @MASP)
-                                                UPDATE dbo.TONKHO SET SOLUONG = SOLUONG + @SL WHERE MAKHO = @MAKHO AND MASP = @MASP;
-                                            ELSE
-                                                INSERT INTO dbo.TONKHO (MASP, MAKHO, SOLUONG) VALUES (@MASP, @MAKHO, @SL);";
-
                             using (var cmd = new SqlCommand(upsertTon, conn, tx))
                             {
-                                cmd.Parameters.AddWithValue("@MAKHO", maKho);
-                                cmd.Parameters.AddWithValue("@MASP", it.MASP);
-                                cmd.Parameters.AddWithValue("@SL", it.SOLUONG);
+                                cmd.Parameters.Add("@MAKHO", SqlDbType.Int).Value = maKho;
+                                cmd.Parameters.Add("@MASP", SqlDbType.Int).Value = maspInt;
+                                cmd.Parameters.Add("@SL", SqlDbType.Int).Value = it.SOLUONG;
                                 cmd.ExecuteNonQuery();
                             }
                         }
@@ -241,7 +274,7 @@ ORDER BY pn.NGAYNHAP DESC, pn.MAPHIEUNHAP DESC";
                     }
                     catch
                     {
-                        tx.Rollback();
+                        try { tx.Rollback(); } catch { /* ignore rollback errors */ }
                         throw;
                     }
                 }

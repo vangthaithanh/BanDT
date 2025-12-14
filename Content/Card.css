@@ -1,0 +1,97 @@
+
+/*Trọng
+/* Chỉnh card */
+.card.border.rounded.shadow {
+    width: 70%; /* để theo cột bootstrap */
+    height: 90%; /* ăn theo h-100 */
+    overflow: hidden;
+    border-radius: 10px !important;
+    display: flex; /* thêm 2 dòng này */
+    flex-direction: column; /* để canh đều */
+}
+.card-img-top {
+    max-width: 50%;
+    max-height: 100px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    transition: transform 0.5s ease;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.1);  /* Phóng to ảnh khi hover */
+}
+
+.product-title {
+    text-decoration: none;
+    color: black;
+    transition: color 0.3s;
+}
+
+.product-title:hover {
+    color: blue;
+    text-decoration: underline;
+}
+/*chỉnh nút sắp xếp*/
+.filter-bar .btn {
+    border: 1px solid #999;
+    border-radius: 8px;
+    padding: 6px 12px;
+    background-color: white; 
+    color: black;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.filter-bar .btn:hover {
+    background-color: #666769;
+    color: white;
+    border-color: #666769;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.btn-custom{
+    background-color:  #eae2d7;
+    border:none;
+    border-radius: 5px;
+    padding: 10px;
+    font-weight: bold;
+}
+
+/*Thu*/
+.brand{
+    background-color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2) ;
+    max-width: 160px;
+    max-height: 80px;
+    font-weight: bold;
+    margin-top:10px ;
+}
+.brand-img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    object-position: center;
+    display: block;
+}
+.box1 {
+    background-color: #eae2d7;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    padding: 2px;
+    margin-top: 40px;
+}
+.box{
+    background-color: white;
+    border: none;
+    border-bottom-left-radius: 10px ;
+    border-bottom-right-radius: 10px;
+    padding: 60px;
+    padding-right:20px
+}
+
+

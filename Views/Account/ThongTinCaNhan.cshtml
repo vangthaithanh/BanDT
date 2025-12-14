@@ -1,0 +1,121 @@
+﻿@model WebDienThoai.Models.ThongTinNguoiDung
+
+@{
+    ViewBag.Title = "Thông tin cá nhân";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // dùng header khách (có search, giỏ hàng)
+    var role = Session["Role"] as string ?? "KHACH";
+    var hoTen = Session["HoTen"] as string ?? Model.HoTen ?? Model.TenTK;
+}
+
+<main class="container-fluid px-4 px-lg-5 py-4 py-lg-5">
+    @Html.Action("ThongTinCNPartial", "Account")
+    <div class="row g-4">
+
+        @Html.Partial("_MenuQLTK")
+
+        <div class="col-12 col-lg-9">
+            <div class="d-flex flex-column gap-4">
+
+                <div class="bg-white p-4 rounded-3 shadow-sm">
+                    <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
+                        <h3 class="fs-5 fw-bold text-dark mb-0">Thông tin cá nhân</h3>
+                        @*viết trang cập nhật thông tin*@
+                        <a href='@Url.Action("CapNhatThongTinCaNhan", "Account")' class="small accent-color fw-semibold text-decoration-none">Cập nhật &gt;&gt;</a>
+                    </div>
+
+                    <div class="d-grid gap-3">
+                        <div class="row g-3 border-bottom pb-2">
+                            <div class="col-4 text-secondary">Họ Tên:</div>
+                            <div class="col-8 fw-medium text-dark">@Model.HoTen</div>
+                        </div>
+                        <div class="row g-3 border-bottom pb-2">
+                            <div class="col-4 text-secondary">Dân tộc:</div>
+                            <div class="col-8 fw-medium text-dark">@Model.DanToc</div>
+                        </div>
+                        <div class="row g-3 border-bottom pb-2">
+                            <div class="col-4 text-secondary">Giới Tính:</div>
+                            <div class="col-8 fw-medium text-dark">@Model.GioiTinh</div>
+                        </div>
+                        <div class="row g-3 border-bottom pb-2">
+                            <div class="col-4 text-secondary">Số điện thoại:</div>
+                            <div class="col-8 fw-medium text-dark">@Model.SDT</div>
+                        </div>
+                        <div class="row g-3 border-bottom pb-2">
+                            <div class="col-4 text-secondary">Email:</div>
+                            <div class="col-8 fw-medium text-dark text-muted fst-italic">@Model.Email</div>
+                        </div>
+                        <div class="row g-3 pt-2">
+                            <div class="col-4 text-secondary">Địa chỉ:</div>
+                            <div class="col-8 fw-medium text-dark">@Model.DiaChi</div>
+                        </div>
+                        @if (Model.IsNhanVien)
+                        {
+                            <div class="row g-3 border-bottom border-top pb-2">
+                                <div class="row g-3 pt-2">
+                                    <div class="col-4 text-secondary">Chức vụ:</div>
+                                    <div class="col-8 fw-medium text-dark">@Model.ChucVu</div>
+                                </div>
+                            </div>
+                            <div class="row g-3 pt-2">
+                                <div class="col-4 text-secondary">Ngày vào làm:</div>
+                                <div class="col-8 fw-medium text-dark">
+                                    @(
+    Model.NgayVaoLam.HasValue
+      ? Model.NgayVaoLam.Value.ToString("dd/MM/yyyy")
+      : ""
+)
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="row g-4">
+
+                    <div class="col-12 col-md-6">
+                        <div class="bg-white p-4 rounded-3 shadow-sm h-100">
+                            <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
+                                <h3 class="fs-5 fw-bold text-dark mb-0">Tài khoản</h3>
+                                @*viết trang đổi mật khẩu*@
+                                <a href='@Url.Action("DoiMatKhau", "Account")' class="small accent-color fw-semibold text-decoration-none">Đổi mật khẩu &gt;&gt;</a>
+                            </div>
+
+                            <div class="d-grid gap-3">
+                                <div class="row g-3 border-bottom pb-2">
+                                    <div class="col-6 text-secondary">Tên tài khoản:</div>
+                                    <div class="col-6 fw-medium text-dark">@Model.TenTK</div>
+                                </div>
+                                <div class="row g-3 pt-2">
+                                    <div class="col-6 text-secondary">Điểm:</div>
+                                    <div class="col-6 fw-semibold loyalty-text">@((Model.Diem ?? 0).ToString())</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="bg-white p-4 rounded-3 shadow-sm h-100">
+                            <h3 class="fs-5 fw-bold text-dark border-bottom pb-3 mb-3">Tài khoản liên kết</h3>
+
+                            <div class="d-grid gap-3">
+                                <div class="d-flex align-items-center justify-content-between p-2 border border-secondary-subtle rounded-3 hover-bg-light transition">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="https://freelogopng.com/images/all_img/1657952641google-logo-png-image.png" alt="Google" class="img-fluid" style="width: 24px; height: 24px;">
+                                    </div>
+                                    <span class="small text-dark fw-semibold">Google</span>
+                                </div>
+
+                                <div class="d-flex align-items-center justify-content-between p-2 border border-secondary-subtle rounded-3 hover-bg-light transition">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/01/Logo-Zalo-Arc.png" alt="Zalo" class="img-fluid rounded-2" style="width: 24px; height: 24px;">
+                                    </div>
+                                    <span class="small text-dark fw-semibold">Zalo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

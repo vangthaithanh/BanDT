@@ -11,20 +11,36 @@ namespace WebDienThoai.Controllers
 {
     public class GioHangController : Controller
     {
-        private string GetConnStr()
+        // Đọc sản phẩm/chi tiết: có thể dùng Conn_Khach
+        private readonly string _connKhach =
+            ConfigurationManager.ConnectionStrings["Conn_Khach"].ConnectionString;
+
+        // THANH TOÁN: dùng Conn_Admin y như AccountController.Login
+        private readonly string _connAdmin =
+            ConfigurationManager.ConnectionStrings["Conn_Admin"].ConnectionString;
+
+        private void SetPopupSuccess(string msg)
         {
-            var cs = ConfigurationManager.ConnectionStrings["Conn_Khach"];
-            return cs?.ConnectionString;
+            TempData["PopupType"] = "success";
+            TempData["PopupMsg"] = msg;
+            TempData["Success"] = msg; // giữ tương thích view cũ
         }
+
+        private void SetPopupError(string msg)
+        {
+            TempData["PopupType"] = "error";
+            TempData["PopupMsg"] = msg;
+            TempData["Error"] = msg; // giữ tương thích view cũ
+        }
+
         public ActionResult Index()
         {
             ViewBag.BreadcrumbList = new List<WebDienThoai.Models.BreadcrumbItem>
             {
                 new WebDienThoai.Models.BreadcrumbItem { Text = "Trang chủ", Action = "Index", Controller = "Home" },
-                new WebDienThoai.Models.BreadcrumbItem { Text = "Giỏ hàng" } // không link
+                new WebDienThoai.Models.BreadcrumbItem { Text = "Giỏ hàng" }
             };
-
-                var cart = Session["GioHang"] as List<GioHang> ?? new List<GioHang>();
+            var cart = Session["GioHang"] as List<GioHang> ?? new List<GioHang>();
             ViewBag.TongSanPham = cart.Sum(i => i.SOLUONG);
             ViewBag.TongTien = cart.Sum(i => i.ThanhTien);
             return View(cart);
@@ -33,9 +49,10 @@ namespace WebDienThoai.Controllers
         public ActionResult Add(int id, int qty = 1)
         {
             if (qty < 1) qty = 1;
-            var cart = Session["GioHang"] as List<GioHang> ?? new List<GioHang>();
 
+            var cart = Session["GioHang"] as List<GioHang> ?? new List<GioHang>();
             var existing = cart.FirstOrDefault(x => x.MASP == id);
+
             if (existing != null)
             {
                 existing.SOLUONG += qty;
@@ -43,8 +60,7 @@ namespace WebDienThoai.Controllers
             else
             {
                 var p = GetProductDetail(id);
-                if (p == null)
-                    return HttpNotFound();
+                if (p == null) return HttpNotFound();
 
                 cart.Add(new GioHang
                 {
@@ -69,10 +85,9 @@ namespace WebDienThoai.Controllers
                 var item = cart.FirstOrDefault(x => x.MASP == masp);
                 if (item != null)
                 {
-                    if (soluong <= 0)
-                        cart.Remove(item);
-                    else
-                        item.SOLUONG = soluong;
+                    if (soluong <= 0) cart.Remove(item);
+                    else item.SOLUONG = soluong;
+
                     Session["GioHang"] = cart;
                 }
             }
@@ -100,15 +115,172 @@ namespace WebDienThoai.Controllers
             return RedirectToAction("Index");
         }
 
+        // =========================
+        // MUA NGAY (dbo.sp_MuaNgay) - Conn_Admin
+        // =========================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult MuaNgay(int masp, int soluong = 1)
+        {
+            var tentk = Session["UserName"] as string; // đúng theo AccountController
+            if (string.IsNullOrWhiteSpace(tentk))
+            {
+                SetPopupError("Bạn cần đăng nhập trước khi mua ngay.");
+                //return RedirectToAction("Login", "Account");
+            }
+
+            if (soluong < 1) soluong = 1;
+
+            try
+            {
+                int? mahd = null;
+                decimal? thanhtien = null;
+
+                using (var conn = new SqlConnection(_connAdmin))
+                using (var cmd = new SqlCommand("dbo.sp_MuaNgay", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@TENTK", SqlDbType.VarChar, 100).Value = tentk;
+                    cmd.Parameters.Add("@MAKHO", SqlDbType.Int).Value = DBNull.Value; // hoặc MAKHO cụ thể
+                    cmd.Parameters.Add("@MASP", SqlDbType.Int).Value = masp;
+                    cmd.Parameters.Add("@SOLUONG", SqlDbType.Int).Value = soluong;
+
+                    conn.Open();
+                    using (var rd = cmd.ExecuteReader())
+                    {
+                        if (rd.Read())
+                        {
+                            if (rd["MAHD"] != DBNull.Value) mahd = Convert.ToInt32(rd["MAHD"]);
+                            if (rd["THANHTIEN"] != DBNull.Value) thanhtien = Convert.ToDecimal(rd["THANHTIEN"]);
+                        }
+                    }
+                }
+
+                SetPopupSuccess(mahd.HasValue
+                    ? $"Mua ngay thành công. Mã HĐ: {mahd} - Tổng tiền: {(thanhtien ?? 0):N0} đ"
+                    : "Mua ngay thành công.");
+            }
+            catch (SqlException ex)
+            {
+                // Nếu không đủ tồn / lỗi validate trong proc => sẽ rơi vào đây
+                SetPopupError("Mua ngay thất bại: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                SetPopupError("Mua ngay thất bại: " + ex.Message);
+            }
+
+            // Đang để về giỏ hàng để bạn thấy thông báo (popup/alert)
+            return RedirectToAction("Index", "GioHang");
+            // Nếu bạn muốn hiện ngay tại trang chi tiết sản phẩm:
+            // return RedirectToAction("ChiTietSanPham", "SanPham", new { id = masp });
+        }
+
+        // =========================
+        // THANH TOÁN GIỎ HÀNG (dbo.sp_ThanhToan_GioHang) - Conn_Admin
+        // =========================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ThanhToan(int[] selectedItems)
+        {
+            var tentk = Session["UserName"] as string;
+            if (string.IsNullOrWhiteSpace(tentk))
+            {
+                SetPopupError("Bạn cần đăng nhập trước khi thanh toán.");
+                return RedirectToAction("Login", "Account");
+            }
+
+            var cart = Session["GioHang"] as List<GioHang> ?? new List<GioHang>();
+            if (!cart.Any())
+            {
+                SetPopupError("Giỏ hàng trống.");
+                return RedirectToAction("Index");
+            }
+
+            if (selectedItems == null || selectedItems.Length == 0)
+            {
+                SetPopupError("Bạn chưa chọn sản phẩm để thanh toán.");
+                return RedirectToAction("Index");
+            }
+
+            var chosen = cart.Where(x => selectedItems.Contains(x.MASP)).ToList();
+            if (!chosen.Any())
+            {
+                SetPopupError("Danh sách sản phẩm được chọn không hợp lệ.");
+                return RedirectToAction("Index");
+            }
+
+            var tvp = new DataTable();
+            tvp.Columns.Add("MASP", typeof(int));
+            tvp.Columns.Add("SOLUONG", typeof(int));
+
+            foreach (var it in chosen)
+                if (it.SOLUONG > 0) tvp.Rows.Add(it.MASP, it.SOLUONG);
+
+            if (tvp.Rows.Count == 0)
+            {
+                SetPopupError("Số lượng không hợp lệ.");
+                return RedirectToAction("Index");
+            }
+
+            try
+            {
+                int? mahd = null;
+                decimal? thanhtien = null;
+
+                using (var conn = new SqlConnection(_connAdmin))
+                using (var cmd = new SqlCommand("dbo.sp_ThanhToan_GioHang", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@TENTK", SqlDbType.VarChar, 100).Value = tentk;
+                    cmd.Parameters.Add("@MAKHO", SqlDbType.Int).Value = DBNull.Value;
+
+                    var p = cmd.Parameters.AddWithValue("@Items", tvp);
+                    p.SqlDbType = SqlDbType.Structured;
+                    p.TypeName = "dbo.TT_GioHangItem";
+
+                    conn.Open();
+                    using (var rd = cmd.ExecuteReader())
+                    {
+                        if (rd.Read())
+                        {
+                            if (rd["MAHD"] != DBNull.Value) mahd = Convert.ToInt32(rd["MAHD"]);
+                            if (rd["THANHTIEN"] != DBNull.Value) thanhtien = Convert.ToDecimal(rd["THANHTIEN"]);
+                        }
+                    }
+                }
+
+                // Xóa khỏi session chỉ những item đã thanh toán, giữ lại item chưa tick
+                cart = cart.Where(x => !selectedItems.Contains(x.MASP)).ToList();
+                Session["GioHang"] = cart;
+
+                SetPopupSuccess(mahd.HasValue
+                    ? $"Thanh toán thành công. Mã HĐ: {mahd} - Tổng tiền: {(thanhtien ?? 0):N0} đ"
+                    : "Thanh toán thành công.");
+            }
+            catch (SqlException ex)
+            {
+                SetPopupError("Thanh toán thất bại: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                SetPopupError("Thanh toán thất bại: " + ex.Message);
+            }
+
+            return RedirectToAction("Index");
+        }
+
         private XemChiTietModel GetProductDetail(int id)
         {
             XemChiTietModel result = null;
-            string connStr = GetConnStr();
-            using (var conn = new SqlConnection(connStr))
+
+            using (var conn = new SqlConnection(_connKhach))
             using (var cmd = new SqlCommand("SELECT * FROM dbo.fn_SanPham_ChiTiet(@MASP)", conn))
             {
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@MASP", id);
+
                 conn.Open();
                 using (var rd = cmd.ExecuteReader())
                 {
@@ -126,5 +298,80 @@ namespace WebDienThoai.Controllers
             }
             return result;
         }
+        //ưu đãi
+        //public ActionResult UuDaiGioHang()
+        //{
+        //    var cart = Session["GioHang"] as List<GioHang> ?? new List<GioHang>();
+        //    int tongSL = cart.Sum(x => x.SOLUONG);
+
+        //    List<UuDai> list = new List<UuDai>();
+
+        //    using (var conn = new SqlConnection(_connKhach))
+        //    using (var cmd = new SqlCommand("PROC_UUDAI_GIOHANG", conn))
+        //    {
+        //        cmd.CommandType = CommandType.StoredProcedure;
+        //        cmd.Parameters.AddWithValue("@TongSoLuong", tongSL);
+
+        //        conn.Open();
+        //        using (var rd = cmd.ExecuteReader())
+        //        {
+        //            while (rd.Read())
+        //            {
+        //                list.Add(new UuDai
+        //                {
+        //                    MaPKM = (int)rd["MAPKM"],
+        //                    LoaiPhieu = rd["LOAIPHIEU"].ToString(),
+        //                    GiaTri = rd["GIATRI"] != DBNull.Value ? (int)rd["GIATRI"] : 0,
+        //                    DieuKien = rd["DIEUKIEN"].ToString(),
+        //                    NgayHetHan = (DateTime)rd["NGAYHETHAN"]
+        //                });
+        //            }
+        //        }
+        //    }
+
+        //    return PartialView("_UuDai", list);
+        //}
+        //public ActionResult UuDaiSanPham(int id)
+        //{
+        //    List<UuDai> list = new List<UuDai>();
+
+        //    using (var conn = new SqlConnection(_connKhach))
+        //    using (var cmd = new SqlCommand("PROC_UUDAI_SANPHAM", conn))
+        //    {
+        //        cmd.CommandType = CommandType.StoredProcedure;
+        //        cmd.Parameters.AddWithValue("@MaSP", id);
+
+        //        conn.Open();
+        //        using (var rd = cmd.ExecuteReader())
+        //        {
+        //            while (rd.Read())
+        //            {
+        //                list.Add(new UuDai
+        //                {
+        //                    MaPKM = (int)rd["MAPKM"],
+        //                    LoaiPhieu = rd["LOAIPHIEU"].ToString(),
+        //                    GiaTri = rd["GIATRI"] != DBNull.Value ? (int)rd["GIATRI"] : 0,
+        //                    DieuKien = rd["DIEUKIEN"].ToString(),
+        //                    NgayHetHan = (DateTime)rd["NGAYHETHAN"]
+        //                });
+        //            }
+        //        }
+        //    }
+
+        //    return PartialView("_UuDai", list);
+        //}
+        //public ActionResult _UuDai()
+        //{
+        //    return View();
+        //}
+        //[HttpPost]
+        //public ActionResult ChonKhuyenMai(int mapkm, int phantram)
+        //{
+        //    Session["MaKM"] = mapkm;
+        //    Session["PhanTramKM"] = phantram;
+
+        //    return Json(new { success = true });
+        //}
     }
 }
+

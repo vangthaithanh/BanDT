@@ -1,81 +1,149 @@
 ﻿@model WebDienThoai.Models.RegisterViewModel
-
 @{
-    ViewBag.Title = "Đăng ký";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = null;
 }
 
-@section Breadcrumb {
-    @ViewBag.Breadcrumb
-}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập | HANDPHONE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<h2>Đăng ký tài khoản</h2>
+    <link rel="stylesheet" href="@Url.Content("~/Content/Login.css")">
+</head>
+<body>
+    <a href='@Url.Action("Index", "Home")' class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+        <span>Quay về trang chủ</span>
+    </a>
 
-@using (Html.BeginForm("Register", "Account", FormMethod.Post))
-{
-    @Html.AntiForgeryToken()
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    <div class="form-group">
-        @Html.LabelFor(m => m.UserName)
-        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+    <div class="login-container" style="max-width: 550px; padding: 50px;">
+
+        <div class="form-header" style="margin-bottom: 20px;">
+            <img src="@Url.Content("~/Content/Anh/logo/headerlogo.png")" alt="HANDPHONE STORE Logo" style="width: 100px; margin-bottom: 10px;">
+            <h3 class="form-title" style="color: #333; margin-bottom: 0;">Đăng Ký Tài Khoản</h3>
+        </div>
+
+        @using (Html.BeginForm("Register", "Account", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger mb-4 text-center" })
+
+            <div class="divider" style="margin: 15px 0;">
+                <span style="font-size: 14px; text-transform: uppercase; font-weight: 600;">Thông tin tài khoản</span>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.UserName, "Tên tài khoản *")
+                <div class="input-wrapper">
+                    @Html.TextBoxFor(m => m.UserName, new { placeholder = "Chọn Tên đăng nhập", required = "required" })
+                    <span class="input-icon"><i class="fas fa-user-circle"></i></span>
+                </div>
+                @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger small mt-1" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Password, "Mật khẩu *")
+                <div class="input-wrapper">
+                    @Html.PasswordFor(m => m.Password, new { placeholder = "Tạo Mật khẩu", required = "required" })
+                    <span class="input-icon"><i class="fas fa-lock"></i></span>
+                </div>
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger small mt-1" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.ConfirmPassword, "Nhập lại mật khẩu *")
+                <div class="input-wrapper">
+                    @Html.PasswordFor(m => m.ConfirmPassword, new { placeholder = "Nhập lại Mật khẩu", required = "required" })
+                    <span class="input-icon"><i class="fas fa-lock"></i></span>
+                </div>
+                @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger small mt-1" })
+            </div>
+
+            <div class="divider" style="margin: 30px 0 15px 0;">
+                <span style="font-size: 14px; text-transform: uppercase; font-weight: 600;">Thông tin cá nhân</span>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.HoTen, "Họ Tên *")
+                <div class="input-wrapper">
+                    @Html.TextBoxFor(m => m.HoTen, new { placeholder = "Nhập Họ và Tên", required = "required" })
+                    <span class="input-icon"><i class="fas fa-id-card"></i></span>
+                </div>
+                @Html.ValidationMessageFor(m => m.HoTen, "", new { @class = "text-danger small mt-1" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.SDT, "Số điện thoại *")
+                <div class="input-wrapper">
+                    @Html.TextBoxFor(m => m.SDT, new { placeholder = "Nhập Họ và Tên", required = "required", type = "tel" })
+                    <span class="input-icon"><i class="fas fa-phone"></i></span>
+                </div>
+                @Html.ValidationMessageFor(m => m.SDT, "", new { @class = "text-danger small mt-1" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Email, "Email")
+                <div class="input-wrapper">
+                    @Html.TextBoxFor(m => m.Email, new { placeholder = "Nhập Email (tùy chọn)", type = "email" })
+                    <span class="input-icon"><i class="fas fa-envelope"></i></span>
+                </div>
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger small mt-1" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.DiaChi, "Địa chỉ")
+                <div class="input-wrapper">
+                    @Html.TextBoxFor(m => m.DiaChi, new { placeholder = "Địa chỉ liên hệ (tùy chọn)" })
+                    <span class="input-icon"><i class="fas fa-map-marker-alt"></i></span>
+                </div>
+                @Html.ValidationMessageFor(m => m.DiaChi, "", new { @class = "text-danger small mt-1" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.GioiTinh, "Giới tính *")
+                <div class="input-wrapper">
+                    @Html.DropDownListFor(
+                        m => m.GioiTinh,
+                        new List<SelectListItem>
+                        {
+                            new SelectListItem { Text = "Nam", Value = "Nam" },
+                            new SelectListItem { Text = "Nữ", Value = "Nữ" }
+                        },
+                        "-- Chọn giới tính --",
+                        new { @class = "custom-select-control", required = "required" }
+                    )
+                    <span class="input-icon" style="left: auto; right: 15px; pointer-events: none;"><i class="fas fa-venus-mars"></i></span>
+                </div>
+                @Html.ValidationMessageFor(m => m.GioiTinh, "", new { @class = "text-danger small mt-1" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.DanToc, "Dân tộc")
+                <div class="input-wrapper">
+                    @Html.TextBoxFor(m => m.DanToc, new { placeholder = "Ví dụ: Kinh (tùy chọn)" })
+                    <span class="input-icon"><i class="fas fa-users"></i></span>
+                </div>
+                @Html.ValidationMessageFor(m => m.DanToc, "", new { @class = "text-danger small mt-1" })
+            </div>
+
+            <button type="submit" class="btn-submit" style="margin-top: 30px; margin-bottom: 15px;">
+                Đăng ký
+            </button>
+        }
+
+        <div class="register-link" style="margin-top: 10px;">
+            Bạn đã có tài khoản? @Html.ActionLink("Đăng nhập ngay", "Login", "Account")
+        </div>
+
     </div>
 
-    <div class="form-group">
-        @Html.LabelFor(m => m.Password)
-        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.ConfirmPassword)
-        @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
-    </div>
-
-    <hr />
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.HoTen)
-        @Html.TextBoxFor(m => m.HoTen, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.HoTen, "", new { @class = "text-danger" })
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.SDT)
-        @Html.TextBoxFor(m => m.SDT, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.SDT, "", new { @class = "text-danger" })
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.Email)
-        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.DiaChi)
-        @Html.TextBoxFor(m => m.DiaChi, new { @class = "form-control" })
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.GioiTinh)
-        @Html.TextBoxFor(m => m.GioiTinh, new { @class = "form-control", placeholder = "Nam/Nữ" })
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.DanToc)
-        @Html.TextBoxFor(m => m.DanToc, new { @class = "form-control" })
-    </div>
-
-    <button type="submit" class="btn btn-success mt-2">Đăng ký</button>
-
-    <p class="mt-3">
-        Đã có tài khoản?
-        @Html.ActionLink("Đăng nhập", "Login", "Account")
-    </p>
-}
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+</body>
+</html>

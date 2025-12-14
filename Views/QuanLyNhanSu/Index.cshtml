@@ -2,38 +2,43 @@
 
 @{
     ViewBag.Title = "Quản lý nhân sự";
+    Layout = "~/Views/Shared/_LayoutQT.cshtml";
 }
 
-<h2>Quản lý nhân sự</h2>
+<div class="bg-white p-4 rounded-3 shadow-sm">
+    <div class="d-flex flex-column " style="min-height: 80vh;">
+        <h2>Quản lý nhân sự</h2>
 
-<p>
-    @Html.ActionLink("Thêm nhân viên mới", "Create", "QuanLyNhanSu", null, new { @class = "btn btn-success" })
-</p>
+        <p>
+            @Html.ActionLink("Thêm nhân viên mới", "Create", "QuanLyNhanSu", null, new { @class = "btn btn-primary" })
+        </p>
 
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Tên đăng nhập</th>
-            <th>Họ tên</th>
-            <th>SĐT</th>
-            <th>Email</th>
-            <th>Chức vụ</th>
-            <th>Ngày vào làm</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var nv in Model)
-        {
-            <tr>
-                <td>@nv.ID</td>
-                <td>@nv.UserName</td>
-                <td>@nv.HoTen</td>
-                <td>@nv.SDT</td>
-                <td>@nv.Email</td>
-                <td>@nv.ChucVu</td>
-                <td>@(nv.NgayVaoLam.HasValue ? nv.NgayVaoLam.Value.ToString("dd/MM/yyyy") : "")</td>
-            </tr>
-        }
-    </tbody>
-</table>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên đăng nhập</th>
+                    <th>Họ tên</th>
+                    <th>SĐT</th>
+                    <th>Email</th>
+                    <th>Chức vụ</th>
+                    <th>Ngày vào làm</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var nv in Model)
+                {
+                    <tr>
+                        <td>@nv.ID</td>
+                        <td>@nv.UserName</td>
+                        <td>@nv.HoTen</td>
+                        <td>@nv.SDT</td>
+                        <td>@nv.Email</td>
+                        <td>@nv.ChucVu</td>
+                        <td>@(nv.NgayVaoLam.HasValue ? nv.NgayVaoLam.Value.ToString("dd/MM/yyyy") : "")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

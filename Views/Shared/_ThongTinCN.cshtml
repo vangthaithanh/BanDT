@@ -1,0 +1,54 @@
+﻿@using System
+
+@{
+    var role = Session["Role"] as string ?? "KHACH";
+    var hoTen = Session["HoTen"] as string ?? Model.HoTen ?? Model.TenTK;
+}
+
+@functions{
+    string ActiveCtrl(string controller)
+    {
+        var c = (ViewContext.RouteData.Values["controller"] ?? "").ToString();
+        return string.Equals(c, controller, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+    }
+}
+<div class="bg-white p-4 rounded-3 shadow mb-4">
+    <div class="d-flex flex-column flex-md-row align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-3 w-100 w-md-auto mb-3 mb-md-0">
+            <div class="profile-placeholder rounded-circle bg-danger border-4 d-flex align-items-center justify-content-center text-white fw-bold overflow-hidden">
+                <div class="w-100 h-100 bg-cover bg-center rounded-circle" style="background-color: #A76D6D;">
+                </div>
+            </div>
+            <div>
+                <h2 class="fs-5 fw-bold text-dark mb-0">@Model.HoTen</h2>
+                <p class="small text-secondary mb-0">@Model.SDT</p>
+            </div>
+        </div>
+        <div class="d-none d-md-block border-end border-secondary-subtle mx-4" style="height: 60px;"></div>
+        <div class="d-md-none w-100 border-top border-secondary-subtle my-3"></div>
+
+        <div class="d-flex align-items-center gap-3 w-100 w-md-auto justify-content-between justify-content-md-start py-2">
+            <i class="fa-solid fa-cart-shopping fs-2 accent-color"></i>
+            <div class="text-center">
+                <div class="fs-5 fw-bold text-dark">@Model.TongDonDaMua</div>
+                @*tính tổng đơn hàng ở đây*@
+                <div class="small text-secondary">Tổng số đơn đã mua</div>
+            </div>
+        </div>
+
+        <div class="d-none d-md-block border-end border-secondary-subtle mx-4" style="height: 60px;"></div>
+        <div class="d-md-none w-100 border-top border-secondary-subtle my-3"></div>
+
+        <div class="d-flex align-items-center gap-3 w-100 w-md-auto justify-content-between justify-content-md-start py-2">
+            <div class="position-relative d-flex align-items-center justify-content-center">
+                <i class="fas fa-tag fs-1 text-secondary opacity-50 transform -rotate-45" style="transform: rotate(-45deg);"></i>
+                <i class="fas fa-dollar-sign position-absolute fs-6 accent-color"></i>
+            </div>
+            <div class="text-end">
+                @*tổng điểm*@
+                <div class=" loyalty-text">Điểm tích luỹ: <span class="fw-semibold">@((Model.Diem ?? 0).ToString())</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+

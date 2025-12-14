@@ -121,8 +121,11 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\BackupController.cs" />
+    <Compile Include="Controllers\DonHangController.cs" />
     <Compile Include="Controllers\GioHangController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\QuanLyKhoController.cs" />
     <Compile Include="Controllers\QuanLyNhanSuController.cs" />
     <Compile Include="Controllers\QuanLySanPhamController.cs" />
@@ -133,18 +136,23 @@
     <Compile Include="Models\BreadcrumbItem.cs" />
     <Compile Include="Models\CartItem.cs" />
     <Compile Include="Models\ChiTietPN.cs" />
+    <Compile Include="Models\DoiMatKhau.cs" />
     <Compile Include="Models\GioHangModel.cs" />
     <Compile Include="Models\Kho.cs" />
+    <Compile Include="Models\LichSuDonHang.cs" />
     <Compile Include="Models\LoaiSP.cs" />
     <Compile Include="Models\PhieuNhap.cs" />
     <Compile Include="Models\QuanLyKhoDAL.cs" />
     <Compile Include="Models\SanPhamViewModel.cs" />
+    <Compile Include="Models\ThongTinNguoiDung.cs" />
     <Compile Include="Models\TonKho.cs" />
     <Compile Include="Models\TonKhoVM.cs" />
+    <Compile Include="Models\UuDai.cs" />
     <Compile Include="Models\XemChiTietModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Anh\logo\chuamua.png" />
     <Content Include="Content\Anh\logo\footer1.png" />
     <Content Include="Content\Anh\logo\footer2.png" />
     <Content Include="Content\Anh\logo\headerlogo.png" />
@@ -203,8 +211,13 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\Card.css" />
+    <Content Include="Content\quanlykho.css" />
     <Content Include="Content\styleDA.css" />
     <Content Include="Content\ThongTin.css" />
+    <Content Include="Content\trangchu.js" />
+    <Content Include="Content\Login.css" />
+    <Content Include="Content\ts.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Scripts\bootstrap.bundle.js" />
@@ -226,18 +239,38 @@
     <Content Include="Content\Anh\Panner\xiaomi4.webp" />
     <Content Include="Content\Anh\sanpham\a25.webp" />
     <Content Include="Content\Anh\sanpham\a3.webp" />
+    <Content Include="Content\Anh\sanpham\ap3.webp" />
     <Content Include="Content\Anh\sanpham\c51.webp" />
+    <Content Include="Content\Anh\sanpham\c61.webp" />
     <Content Include="Content\Anh\sanpham\ip12.webp" />
+    <Content Include="Content\Anh\sanpham\ip1314.webp" />
+    <Content Include="Content\Anh\sanpham\ip16e.webp" />
     <Content Include="Content\Anh\sanpham\iphone14-plus.webp" />
     <Content Include="Content\Anh\sanpham\iphone14-pro-promax.webp" />
     <Content Include="Content\Anh\sanpham\iphone14.webp" />
     <Content Include="Content\Anh\sanpham\iphone15-pro-promax.webp" />
     <Content Include="Content\Anh\sanpham\iphone15-thuong-plus.webp" />
+    <Content Include="Content\Anh\sanpham\iphone16-promax.webp" />
+    <Content Include="Content\Anh\sanpham\iphone16-thuong-pro.webp" />
+    <Content Include="Content\Anh\sanpham\s24ultra.webp" />
     <Content Include="Content\Anh\sanpham\sony720.webp" />
     <Content Include="Content\Anh\sanpham\ugreensacnhanh.webp" />
     <Content Include="Content\Anh\sanpham\xiaomi-thuong.webp" />
+    <Content Include="Content\Anh\sanpham\xiaomi-ultra.webp" />
+    <Content Include="Content\Anh\sanpham\xiaominhanh.webp" />
+    <Content Include="Content\Anh\sanpham\y04.webp" />
     <Content Include="Content\Anh\sanpham\y16.webp" />
     <Content Include="Content\Anh\sanpham\zflip6.webp" />
+    <Content Include="Content\Anh\sanpham\zfold6.webp" />
+    <Content Include="Content\Anh\sanpham\airpods2.webp" />
+    <Content Include="Content\Anh\sanpham\cap-typec.webp" />
+    <Content Include="Content\Anh\sanpham\iphone15-thuong.webp" />
+    <Content Include="Content\Anh\sanpham\iphone16-pro.webp" />
+    <Content Include="Content\Anh\sanpham\redmi-note13.webp" />
+    <Content Include="Content\Anh\sanpham\reno12.webp" />
+    <Content Include="Content\Anh\sanpham\s24-ultra.webp" />
+    <Content Include="Content\Anh\sanpham\xiaomi14.webp" />
+    <Content Include="Content\Anh\sanpham\y18.webp" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -265,7 +298,6 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\_Header.cshtml" />
     <Content Include="Views\Shared\_Footer.cshtml" />
-    <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Home\Duyet.cshtml" />
     <Content Include="Views\Shared\_MenuLoai.cshtml" />
@@ -279,9 +311,26 @@
     <Content Include="Views\QuanLyKho\TaoPhieuNhap.cshtml" />
     <Content Include="Views\QuanLySanPham\Index.cshtml" />
     <Content Include="Views\GioHang\Index.cshtml" />
+    <Content Include="Views\Shared\_ResultPopup.cshtml" />
+    <Content Include="Views\Account\Backup.cshtml" />
+    <Content Include="Views\GioHang\_UuDai.cshtml" />
+    <Content Include="Views\Shared\_MenuQT.cshtml" />
+    <Content Include="Views\Shared\_LayoutQT.cshtml" />
+    <Content Include="Views\Home\QuanTri.cshtml" />
+    <Content Include="Views\Shared\View.cshtml" />
+    <Content Include="Views\Account\ThongTinCaNhan.cshtml" />
+    <Content Include="Views\Shared\_MenuQLTK.cshtml" />
+    <Content Include="Views\Shared\_ThongTinCN.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Account\CapNhatThongTinCaNhan.cshtml" />
+    <Content Include="Views\Account\DoiMatKhau.cshtml" />
+    <Content Include="Views\DonHang\LichSuMuaHang.cshtml" />
+    <Content Include="Views\DonHang\ChiTiet.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Backup\" />
+    <Folder Include="Views\Payment\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

@@ -1,4 +1,4 @@
-
+﻿
 .header-img {
     max-width: 130px; 
     max-height: 100px; 
@@ -58,6 +58,7 @@
     position: relative;
 }
 
+/* Luôn ẩn menu mặc định, bất kể .dropdown-menu hay .show của Bootstrap */
 .danh-muc-menu {
     position: absolute;
     top: 100%;
@@ -67,12 +68,17 @@
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.12);
     padding: 6px 0;
-    display: none;
+    display: none !important; /* QUAN TRỌNG */
     z-index: 1000;
 }
-
 .danh-muc-dropdown:hover .danh-muc-menu {
-    display: block;
+    display: block !important;
+}
+
+
+/* CHỈ khi hover vào li.danh-muc-dropdown mới hiện */
+.danh-muc-dropdown:hover .danh-muc-menu {
+    display: block !important; /* QUAN TRỌNG */
 }
 
 .danh-muc-menu .dropdown-item {
@@ -104,3 +110,195 @@ footer.footer-shadow {
     margin-top: 0 !important;
     flex-shrink: 0;
 }
+
+
+
+
+.header
+{
+    background-color:  #eae2d7;
+    max-height: 90px;
+}
+.header-img
+{
+    max-width: 100px;
+    max-height: 100px;
+    margin-left: 15px;
+}
+.header-item
+{
+    background-color: #f4ebdf;
+    font-weight: 750;  
+    width: 150px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    position: relative;
+}
+.header button
+{
+    transition: all 0.3s ease;
+}
+.header button:hover
+{
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transform: scale(1.1);
+}
+.header-item:hover
+{
+    background-color: #e6c191;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transform: scale(1.06);
+}
+.sticky-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+  background-color: #FFF;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Đẩy nội dung xuống tránh bị che */
+body {
+  padding-top: 140px; /* Điều chỉnh nếu header + breadcrumb cao hơn */
+}
+
+.breadcrumb-nav {
+  background-color: #fdf9f5;
+  padding: 6px 16px;
+}
+
+.menu-text
+{
+    text-decoration: none;
+    color: #000;
+    font-weight: 750;
+}
+.dropdown-menu {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.menu-cap3 {
+  position: absolute;
+  display: none;
+  top: 0;
+  left: 100%;
+  background-color: #fff; 
+  padding: 10px;
+  border-radius: 6px;
+  list-style: none;
+  
+}
+
+.dropdown-item:hover .menu-cap3
+{
+  display: block;
+}
+/* Khi hover vào menu cấp 2 */
+.dropdown-item:hover {
+    background-color: #b0adac !important;
+    font-weight: bold;
+}
+
+/* Khi hover vào menu cấp 3 */
+.menu-cap3 li a:hover {
+    color: #e6c191;
+    font-weight: bold;
+    
+}
+
+/* Hiệu ứng mềm mượt */
+.menu-cap3, .dropdown-item, .dropdown-menu {
+    transition: all 0.3s ease;
+}
+/* Footer đổ bóng */
+.footer-shadow {
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  background-color: #f4ebdf;
+  padding: 40px 20px;
+}
+
+/*Khung ảnh*/
+.carousel-wrapper {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 2px solid #ccc;
+  margin-bottom: 20px;
+}
+
+
+.carousel-caption-bar {
+  display: flex;
+  justify-content: space-around;
+  background-color: #fff;
+  padding: 12px 0;
+  border-top: 1px solid #ddd;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  z-index: 1;
+}
+
+.caption-item {
+  flex: 1;
+  text-align: center;
+  font-weight: 600;
+  position: relative;
+  cursor: pointer;
+  padding: 6px 0;
+}
+
+.caption-item.active::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 15%;
+  width: 70%;
+  height: 3px;
+  background-color: #e6c191;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+/*khung tin tức*/
+.news-box {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #eae2d7;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  padding-top: 20px ;
+  padding-left: 10px;
+  margin-bottom: 10px ;
+}
+.news-box h5 {
+  font-size: 1.2rem;
+}
+
+.news-img {
+  width: 300px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* Chữ lớn hơn */
+.news-box p {
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+.news-box small {
+  font-size: 0.95rem;
+}
+
+

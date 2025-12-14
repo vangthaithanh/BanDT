@@ -103,6 +103,12 @@ namespace WebDienThoai.Controllers
 
                             Session["ConnName"] = connName;
 
+                            if (isNhanVien && roleCode != "KHACH")
+                            {
+                                return RedirectToAction("QuanTri", "Home");
+                            }
+
+                            // KHÁCH: về trang chủ (hoặc ReturnUrl nếu bạn đang dùng)
                             return RedirectToAction("Index", "Home");
                         }
                         else
@@ -213,8 +219,212 @@ namespace WebDienThoai.Controllers
             Session.Clear();
             return RedirectToAction("Index", "Home");
         }
+        public ActionResult Backup()
+        {
+            if (Session["Role"] == null || Session["Role"].ToString() != "ADMIN")
+                return new HttpUnauthorizedResult("Bạn không có quyền truy cập trang này!");
+            return View();
+        }
 
+        // lấy thông tin cá nhân (dùng Conn_Admin để tránh lỗi quyền theo role)
+        private ThongTinNguoiDung GetUserProfile(string tentk)
+        {
+            if (string.IsNullOrWhiteSpace(tentk)) return null;
+            using (var conn = new SqlConnection(_connLogin))
+            using (var cmd = new SqlCommand("usp_User_GetProfile", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@TENTK", SqlDbType.VarChar, 50).Value = tentk.Trim();
 
+                conn.Open();
+                using (var rd = cmd.ExecuteReader(CommandBehavior.SingleRow))
+                {
+                    if (!rd.Read()) return null;
+                    var vm = new ThongTinNguoiDung
+                    {
+                        Id = rd["ID"] == DBNull.Value ? 0 : Convert.ToInt32(rd["ID"]),
+                        TenTK = rd["TENTK"] == DBNull.Value ? null : rd["TENTK"].ToString(),
+                        HoTen = rd["HOTEN"] == DBNull.Value ? null : rd["HOTEN"].ToString(),
+                        SDT = rd["SDT"] == DBNull.Value ? null : rd["SDT"].ToString(),
+                        Email = rd["EMAIL"] == DBNull.Value ? null : rd["EMAIL"].ToString(),
+                        DiaChi = rd["DIACHI"] == DBNull.Value ? null : rd["DIACHI"].ToString(),
+                        GioiTinh = rd["GIOITINH"] == DBNull.Value ? null : rd["GIOITINH"].ToString(),
+                        DanToc = rd["DANTOC"] == DBNull.Value ? null : rd["DANTOC"].ToString(),
+                        IsNhanVien = rd["IS_NHANVIEN"] != DBNull.Value && Convert.ToInt32(rd["IS_NHANVIEN"]) == 1,
+                        ChucVu = rd["CHUCVU"] == DBNull.Value ? null : rd["CHUCVU"].ToString(),
+                        NgayVaoLam = rd["NGAYVAOLAM"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rd["NGAYVAOLAM"]),
+                        TongDonDaMua = rd["TONG_DON"] == DBNull.Value ? 0 : Convert.ToInt32(rd["TONG_DON"]),
+                        Diem = rd["DIEM"] == DBNull.Value ? (int?)null : Convert.ToInt32(rd["DIEM"]),
+                        RoleCode = rd["ROLE_CODE"] == DBNull.Value ? "KHACH" : rd["ROLE_CODE"].ToString()
+                    };
+                    return vm;
+                }
+            }
+        }
+        [HttpGet]
+        public ActionResult ThongTinCaNhan()
+        {
+            var tentk = Session["UserName"] as string;
+            if (string.IsNullOrWhiteSpace(tentk))
+                return RedirectToAction("Login", "Account");
+            var vm = GetUserProfile(tentk);
+            if (vm == null)
+                return HttpNotFound("Không tìm thấy thông tin người dùng.");
+            ViewBag.BreadcrumbList = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem { Text = "Trang chủ", Action = "Index", Controller = "Home" },
+        new BreadcrumbItem { Text = "Tài khoản" },
+        new BreadcrumbItem { Text = "Thông tin cá nhân" }
+    };
+            return View(vm);
+        }
+        [HttpGet]
+        public ActionResult CapNhatThongTinCaNhan()
+        {
+            if (Session["UserName"] == null)
+            {
+                TempData["Error"] = "Vui lòng đăng nhập để cập nhật thông tin.";
+                return RedirectToAction("Login");
+            }
+            string userName = Session["UserName"].ToString();
+            var model = GetUserProfile(userName); // Lấy dữ liệu profile hiện tại
+            if (model == null)
+            {
+                TempData["Error"] = "Không tìm thấy thông tin hồ sơ để cập nhật.";
+                return RedirectToAction("ThongTinCaNhan");
+            }
+            ViewBag.Breadcrumb = "Cập nhật thông tin cá nhân";
+            return View("CapNhatThongTinCaNhan", model); // Trả về View CNThongTinCaNhan.cshtml
+        }
+
+        //cập nhật thông tin cá nhân
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CapNhatThongTinCaNhan(ThongTinNguoiDung input)
+        {
+            if (Session["UserName"] == null)
+            {
+                return RedirectToAction("Login");
+            }
+            input.TenTK = Session["UserName"].ToString();
+
+            // Dùng ValidationSummary, nếu có lỗi model thì trả về 
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Breadcrumb = "Cập nhật thông tin cá nhân";
+                //  Trả về View với dữ liệu đã nhập 
+                return View("CapNhatThongTinCaNhan", input);
+            }
+            try
+            {
+                using (var conn = new SqlConnection(_connLogin))
+                using (var cmd = new SqlCommand("usp_User_UpdateProfile", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@TENTK", SqlDbType.VarChar, 50).Value = input.TenTK;
+                    cmd.Parameters.Add("@HOTEN", SqlDbType.NVarChar, 100).Value = (object)input.HoTen ?? DBNull.Value;
+                    cmd.Parameters.Add("@SDT", SqlDbType.VarChar, 15).Value = (object)input.SDT ?? DBNull.Value; // ĐÃ SỬA: từ input.Sdt thành input.SDT
+                    cmd.Parameters.Add("@EMAIL", SqlDbType.VarChar, 100).Value = (object)input.Email ?? DBNull.Value;
+                    cmd.Parameters.Add("@DIACHI", SqlDbType.NVarChar, 255).Value = (object)input.DiaChi ?? DBNull.Value;
+                    cmd.Parameters.Add("@GIOITINH", SqlDbType.NVarChar, 10).Value = (object)input.GioiTinh ?? DBNull.Value;
+                    cmd.Parameters.Add("@DANTOC", SqlDbType.NVarChar, 30).Value = (object)input.DanToc ?? DBNull.Value;
+                    conn.Open();
+                    using (var rd = cmd.ExecuteReader())
+                    {
+                        rd.Read();
+                        int code = Convert.ToInt32(rd["Code"]);
+                        string msg = rd["Msg"].ToString();
+                        if (code != 0)
+                        {
+                            TempData["Error"] = msg;
+                            ViewBag.Breadcrumb = "Cập nhật thông tin cá nhân";
+                            // Trả về View với dữ liệu đã nhập
+                            return View("CapNhatThongTinCaNhan", input);
+                        }
+                        //  Cập nhật lại Session và thông báo
+                        if (!string.IsNullOrWhiteSpace(input.HoTen))
+                            Session["HoTen"] = input.HoTen;
+                        TempData["Success"] = "Cập nhật thông tin cá nhân thành công!";
+                        return RedirectToAction("ThongTinCaNhan"); // Chuyển hướng về trang hiển thị
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Đã xảy ra lỗi hệ thống: " + ex.Message;
+                ViewBag.Breadcrumb = "Cập nhật thông tin cá nhân";
+                return View("CapNhatThongTinCaNhan", input);
+            }
+        }
+        //đổi mật khẩu
+        [HttpGet]
+        public ActionResult DoiMatKhau()
+        {
+            var tentk = Session["UserName"] as string;
+            if (string.IsNullOrWhiteSpace(tentk))
+                return RedirectToAction("Login", "Account");
+            ViewBag.BreadcrumbList = new List<WebDienThoai.Models.BreadcrumbItem>
+    {
+        new WebDienThoai.Models.BreadcrumbItem { Text = "Trang chủ", Action = "Index", Controller = "Home" },
+        new WebDienThoai.Models.BreadcrumbItem { Text = "Tài khoản" },
+        new WebDienThoai.Models.BreadcrumbItem { Text = "Đổi mật khẩu" }
+    };
+            return View(new WebDienThoai.Models.DoiMatKhau());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DoiMatKhau(WebDienThoai.Models.DoiMatKhau model)
+        {
+            var tentk = Session["UserName"] as string;
+            if (string.IsNullOrWhiteSpace(tentk))
+                return RedirectToAction("Login", "Account");
+            if (!ModelState.IsValid)
+                return View(model);
+            try
+            {
+                using (var conn = new SqlConnection(_connLogin))
+                using (var cmd = new SqlCommand("usp_Account_ChangePassword", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@TENTK", SqlDbType.VarChar, 100).Value = tentk;
+                    cmd.Parameters.Add("@OLDPASS", SqlDbType.NVarChar, 200).Value = model.OldPassword ?? "";
+                    cmd.Parameters.Add("@NEWPASS", SqlDbType.NVarChar, 200).Value = model.NewPassword ?? "";
+                    conn.Open();
+                    using (var rd = cmd.ExecuteReader())
+                    {
+                        if (!rd.Read())
+                        {
+                            TempData["Error"] = "Đổi mật khẩu thất bại";
+                            return View(model);
+                        }
+                        int code = Convert.ToInt32(rd["Code"]);
+                        string msg = rd["Msg"]?.ToString();
+                        if (code != 0)
+                        {
+                            TempData["Error"] = msg;
+                            return View(model);
+                        }
+                        TempData["Success"] = msg ?? "Đổi mật khẩu thành công!";
+                        return RedirectToAction("ThongTinCaNhan"); // hoặc quay lại trang tài khoản của bạn
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Lỗi hệ thống: " + ex.Message;
+                return View(model);
+            }
+        }
+        [ChildActionOnly]
+        public PartialViewResult ThongTinCNPartial()
+        {
+            if (Session["UserName"] == null)
+                return PartialView("_ThongTinCN", new ThongTinNguoiDung());
+            string tentk = Session["UserName"].ToString();
+            var vm = GetUserProfile(tentk) ?? new ThongTinNguoiDung();
+            return PartialView("_ThongTinCN", vm);
+        }
     }
-    
+
 }

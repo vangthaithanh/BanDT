@@ -84,7 +84,6 @@ namespace WebDienThoai.Controllers
 
             return View(list);
         }
-
         private List<LoaiSP> GetAllLoai()
         {
             var list = new List<LoaiSP>();

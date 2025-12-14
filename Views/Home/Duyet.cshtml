@@ -6,99 +6,99 @@
 
 @using (Html.BeginForm("LocSanPham", "Home", FormMethod.Get))
 {
-    <div class="row mb-3">
-        <div class="col-md-3">
-            <label>Loại</label>
-            @* có thể dùng DropDownList loại *@
-            @Html.TextBox(
-                "maloai",
-                (object)ViewBag.MaLoai,            // ÉP KIỂU
-                new { @class = "form-control" })
-        </div>
+    <div class="filter-panel mb-4">
+        <div class="row g-3 g-md-4 align-items-end">
 
-        <div class="col-md-3">
-            <label>Hãng</label>
-            @Html.TextBox(
-                "hang",
-                (object)(ViewBag.Hang as string),   // ÉP KIỂU
-                new { @class = "form-control" })
-        </div>
+            <div class="col-12 col-md-3">
+                <label class="form-label fw-semibold">Loại</label>
+                @Html.TextBox(
+                    "maloai",
+                    (object)ViewBag.MaLoai,
+                    new { @class = "form-control filter-input", placeholder = "VD: DT, PK..." })
+            </div>
 
-        <div class="col-md-2">
-            <label>Giá từ</label>
-            @Html.TextBox(
-                "giaMin",
-                (object)ViewBag.GiaMin,             // ÉP KIỂU
-                new { @class = "form-control", type = "number" })
-        </div>
+            <div class="col-12 col-md-3">
+                <label class="form-label fw-semibold">Hãng</label>
+                @Html.TextBox(
+                    "hang",
+                    (object)(ViewBag.Hang as string),
+                    new { @class = "form-control filter-input", placeholder = "VD: Apple, Samsung..." })
+            </div>
 
-        <div class="col-md-2">
-            <label>Đến</label>
-            @Html.TextBox(
-                "giaMax",
-                (object)ViewBag.GiaMax,             // ÉP KIỂU
-                new { @class = "form-control", type = "number" })
-        </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label fw-semibold">Giá từ</label>
+                @Html.TextBox(
+                    "giaMin",
+                    (object)ViewBag.GiaMin,
+                    new { @class = "form-control filter-input", type = "number", placeholder = "0" })
+            </div>
 
-        <div class="col-md-2 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary w-100">Lọc</button>
+            <div class="col-6 col-md-2">
+                <label class="form-label fw-semibold">Đến</label>
+                @Html.TextBox(
+                    "giaMax",
+                    (object)ViewBag.GiaMax,
+                    new { @class = "form-control filter-input", type = "number", placeholder = "99999999" })
+            </div>
+
+            <div class="col-12 col-md-2">
+                <button type="submit" class="btn btn-primary w-100 filter-btn">Lọc</button>
+            </div>
+
         </div>
     </div>
 }
-<div class="product-list">
+
+<div id="productRow" class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3">
     @foreach (var sp in Model)
     {
         var url = Url.Content("~/Content/Anh/sanpham/" + sp.ANH);
-        <a class="no-underline-link" href="@Url.Action("ChiTietSanPham", "Home", new { id = sp.MASP })">
-            <div class="product-card">
-                @* Debug đường dẫn ảnh, nếu không cần nữa có thể xoá *@
-                @* <p>@url</p> *@
 
-                <img src="@url" alt="@sp.TENSP" />
-                <h3>@sp.TENSP</h3>
-                <div class="price">
-                    @string.Format("{0:N0} đ", sp.GIABAN)
-                </div>
+        <div class="col mb-3">
+            <div class="card border rounded shadow h-100">
+                @* ảnh *@
+                <a href="@Url.Action("ChiTietSanPham", "Home", new { id = sp.MASP })"
+                   class="product-link text-decoration-none text-dark">
+                    <div class="position-relative overflow-hidden">
+                        @* biến tên *@
+                        <img src="@url" class="card-img-top" alt="@sp.TENSP" />
+                        <span class="position-absolute top-0 start-0 badge bg-danger mt-2 ms-2">-24%</span>
+                    </div>
+                    <div class="card-body text-start">
+                        <h5 class="card-title">@sp.TENSP</h5>
+                        <p class="text-decoration-line-through text-muted">33,000,000 đ</p>
+                        @* biêns giá bán *@
+                        <p class="text-danger fs-4 fw-bold">@string.Format("{0:N0} đ", sp.GIABAN)</p>
+                        <small class="text-muted">👁️ 3,100 lượt xem</small>
+                    </div>
+                </a>
             </div>
-        </a>
+        </div>
     }
-
 
 </div>
 
 <style>
-    .product-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
-        padding: 16px 24px;
-    }
-
-    .product-card {
-        width: 220px;
+    /* ===== Filter UI ===== */
+    .filter-panel {
+        background: #eae2d7;
         border-radius: 12px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        padding: 12px;
-        background: #fff;
-        margin-bottom: 16px;
+        padding: 16px 16px;
+        margin-top:20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,.08);
     }
 
-        .product-card img {
-            width: 100%;
-            height: auto;
-            display: block;
-            border-radius: 8px;
-        }
+    .filter-input {
+        border-radius: 10px;
+        height: 44px;
+    }
 
-        .product-card h3 {
-            margin: 8px 0 4px;
-            font-size: 14px;
-        }
+    .filter-btn {
+        border-radius: 10px;
+        height: 44px;
+        font-weight: 700;
+    }
 
-        .product-card .price {
-            color: #e21;
-            font-weight: bold;
-        }
 </style>
 
 

@@ -1,0 +1,194 @@
+        :root {
+            --primary-color: #A76D6D;
+            --primary-hover: #8e5b5b;
+            --bg-color: #fdfaf7;
+            --header-bg: #eae2d7;
+            --text-color: #333;
+            --sidebar-width: 280px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-bg {
+            background-color: var(--header-bg);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .brand-text {
+            color: var(--primary-color);
+            font-weight: 800;
+            font-size: 1.25rem;
+            text-transform: uppercase;
+        }
+
+        .main-wrapper {
+            display: flex;
+            flex-grow: 1;
+            padding: 2rem;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            flex-shrink: 0;
+        }
+
+        .sidebar-menu {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #666;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .menu-item i {
+            width: 24px;
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+
+        .menu-item:hover {
+            background-color: var(--header-bg);
+            color: var(--primary-color);
+        }
+
+        .menu-item.active {
+            background-color: var(--header-bg);
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .content-area {
+            flex-grow: 1;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            min-height: 500px;
+        }
+
+        .btn-create-red {
+            background-color: #b71c1c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .btn-create-red:hover {
+            background-color: #a50b0b;
+            color: white;
+        }
+
+        .toolbar-link {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: color 0.2s;
+        }
+
+        .toolbar-link:hover {
+            color: var(--primary-color);
+            background-color: #eae2d7;
+            border-radius: 6px;
+        }
+
+        .table {
+            margin-top: 1.5rem;
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background-color: #f8f9fa; 
+            border-bottom: none;
+            color: #212529;
+            font-weight: 700;
+            padding: 1rem 1rem;
+            white-space: nowrap;
+        }
+
+        .table tbody td {
+            padding: 1rem 1rem;
+            vertical-align: middle;
+            color: #555;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .btn-action-gray {
+            background-color: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 16px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .btn-action-gray:hover {
+            background-color: #A76D6D;
+            color: white;
+        }
+
+        @media (max-width: 992px) {
+            .main-wrapper {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            .sidebar {
+                width: 100%;
+            }
+        }
+        .btn-outline-custom {
+            border: 1px solid #ddd;
+            background: white;
+            color: #4d4d4d;
+            border-radius: 6px;
+            padding: 6px 16px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .btn-outline-custom:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: #fffaf5;
+        }

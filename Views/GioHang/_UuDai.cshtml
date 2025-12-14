@@ -1,0 +1,60 @@
+﻿@model List<WebDienThoai.Models.UuDai>
+
+@if (Model == null || Model.Count == 0)
+{
+    <p class="text-danger">Không có ưu đãi phù hợp.</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Mã</th>
+                <th>Loại phiếu</th>
+                <th>Giá trị (%)</th>
+                <th>Điều kiện</th>
+                <th>Hết hạn</th>
+                <th>Chọn</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.MaPKM</td>
+                    <td>@item.LoaiPhieu</td>
+                    <td>@item.GiaTri%</td>
+                    <td>@item.DieuKien</td>
+                    <td>@item.NgayHetHan.ToString("dd/MM/yyyy")</td>
+
+                    <td>
+                        <button class="btn btn-success btnChonKM"
+                                data-makm="@item.MaPKM"
+                                data-phantram="@item.GiaTri">
+                            Chọn
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<script>
+    $(".btnChonKM").click(function () {
+        let maKM = $(this).data("makm");
+        let phanTram = $(this).data("phantram");
+
+        // Lưu vào session (gửi về Controller)
+        $.ajax({
+            url: "/ThanhToan/ChonKhuyenMai",
+            type: "POST",
+            data: { mapkm: maKM, phantram: phanTram },
+            success: function (res) {
+                alert("Đã chọn mã KM: " + maKM);
+                location.reload(); // reload để cập nhật tổng tiền sau giảm
+            }
+        });
+    });
+</script>

@@ -1,0 +1,103 @@
+﻿@model List<WebDienThoai.Models.LichSuDonHang>
+@using System.Linq
+@{
+    ViewBag.Title = "LichSuMuaHang";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //lấy tag tình trạng giao hàng
+    string cur = ViewBag.CurrentStatus as string;
+    Func<string, string> act = (s) => string.Equals(cur, s, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+    Func<string, string> statusText = (s) =>
+    {
+        if (string.IsNullOrEmpty(s)) return "Tất cả";
+        switch (s)
+        {
+            case "Chờ xử lý": return "Chờ xử lý";
+            case "Đang giao": return "Đang giao";
+            case "Đã giao": return "Đã giao";
+            case "Huỷ": return "Huỷ";
+            default: return s;
+        }
+    };
+}
+
+<main class="container-fluid px-4 px-lg-5 py-4 py-lg-5">
+    @Html.Action("ThongTinCNPartial", "Account")
+    <div class="row g-4">
+        @Html.Partial("_MenuQLTK")
+        <div class="col-12 col-lg-9">
+            <div class="bg-white rounded-3 shadow-sm h-100 d-flex flex-column">
+
+                <div class="history-tabs-container border-bottom px-4 pt-3">
+                    <nav class="nav nav-history">
+                        <a class="nav-link @act(null)" href="@Url.Action("LichSuMuaHang","DonHang")">Tất cả</a>
+                        <a class="nav-link @act("Chờ xử lý")" href="@Url.Action("LichSuMuaHang","DonHang", new { status="Chờ xử lý" })">Chờ xác nhận</a>
+                        <a class="nav-link @act("Đang giao")" href="@Url.Action("LichSuMuaHang","DonHang", new { status="Đang giao" })">Đang giao hàng</a>
+                        <a class="nav-link @act("Đã giao")" href="@Url.Action("LichSuMuaHang","DonHang", new { status="Đã giao" })">Đã vận chuyển</a>
+                        <a class="nav-link @act("Huỷ")" href="@Url.Action("LichSuMuaHang","DonHang", new { status="Huỷ" })">Huỷ</a>
+                    </nav>
+                </div>
+                <div class="p-4 bg-light flex-grow-1 rounded-bottom-3">
+                    @foreach (var g in Model.GroupBy(x => x.MaHD))
+                    {
+                        var dh = g.First();
+
+                        <div class="bg-white p-4 rounded-3 shadow-sm mb-3">
+                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center border-bottom pb-3 mb-3 gap-2">
+                                <div class="text-secondary small">
+                                    <span class="fw-bold">Đơn hàng:</span> @dh.MaHD
+                                    <span class="mx-2 d-none d-md-inline">|</span>
+                                    <span class="d-block d-md-inline mt-1 mt-md-0 fw-bold">Ngày đặt hàng:</span> @dh.NgayLap.ToString("dd/MM/yyyy")
+                                </div>
+                                <div class="badge status-badge rounded-pill px-3 py-2 text-uppercase">
+                                    @statusText(dh.TrangThaiGiaoHang)
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-column flex-md-row gap-3">
+
+                                @{
+                                    var spMau = g.First();                 // 1 sản phẩm mẫu
+                                    var tongSoLuong = g.Sum(x => x.SoLuong); // tổng số lượng của đơn
+                                }
+                                <div class="d-flex gap-3 flex-grow-1">
+                                    <div class="flex-shrink-0">
+                                        <img src="~/Content/Anh/sanpham/@spMau.Anh"
+                                             alt="@spMau.TenSP"
+                                             class="rounded-3 border object-fit-cover"
+                                             style="width: 80px; height: 80px;">
+                                    </div>
+
+                                    <div>
+                                        <h5 class="fs-6 fw-bold mb-1 line-clamp-2">@spMau.TenSP</h5>
+
+                                        <div class="small text-secondary mb-1">
+                                            Tổng số lượng: <b>@tongSoLuong</b>
+                                        </div>
+
+                                        <div class="small text-secondary">
+                                            (@g.Count() sản phẩm trong đơn)
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-md-end d-flex flex-column gap-2" style="min-width: 200px;">
+                                    <div>
+                                        <span class="text-secondary me-1">Tổng thanh toán:</span>
+                                        <span class="fs-7 fw-bold accent-color">@String.Format("{0:N0}đ", dh.ThanhTien)</span>
+                                    </div>
+
+                                    <div class="d-flex gap-2 justify-content-md-end mt-auto pt-2">
+                                        <a href="@Url.Action("ChiTiet", "DonHang", new { id = dh.MaHD })" class="btn btn-sm text-dark border-0 fw-semibold text-decoration-none px-0">
+                                            Xem chi tiết &gt;&gt;
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+

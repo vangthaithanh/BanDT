@@ -1,0 +1,151 @@
+﻿@{
+    ViewBag.Title = "Backup & Restore Database";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    bool isAdmin = Session["Role"] != null &&
+                   Session["Role"].ToString() == "ADMIN";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<div class="container mt-4">
+    @if (TempData["msg"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["msg"]
+        </div>
+    }
+
+    <h2 class="fw-bold mb-4">
+        <i class="fa-solid fa-database me-2"></i>Backup & Restore Database
+    </h2>
+
+    @if (!isAdmin)
+    {
+        <div class="alert alert-danger">
+            <i class="fa-solid fa-ban me-1"></i>
+            Chỉ quản trị viên (ADMIN) mới có quyền sử dụng chức năng Backup và Restore.
+        </div>
+
+        <p class="text-muted fst-italic">
+            Vui lòng đăng nhập bằng tài khoản ADMIN để tiếp tục.
+        </p>
+
+        return;
+    }
+
+    <!-- KHỐI BACKUP THỦ CÔNG -->
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="card-header bg-light fw-bold">
+            <i class="fa-solid fa-plus-circle me-2"></i>Tạo Backup Thủ Công
+        </div>
+
+        <div class="card-body">
+            <div class="row text-center">
+
+                <!-- Full Backup -->
+                <div class="col-md-4 mb-3">
+                    <div class="card p-3 shadow-sm hover-card">
+                        <i class="fa-solid fa-database fa-3x text-success mb-3"></i>
+                        <h5 class="fw-bold">Full Backup</h5>
+                        <p>Sao lưu toàn bộ database</p>
+
+                        <a href="@Url.Action("BackupFull", "Backup")"
+                           class="btn btn-success w-100">
+                            <i class="fa-solid fa-download me-1"></i> Tạo Full Backup
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Differential -->
+                <div class="col-md-4 mb-3">
+                    <div class="card p-3 shadow-sm hover-card">
+                        <i class="fa-solid fa-coins fa-3x text-warning mb-3"></i>
+                        <h5 class="fw-bold">Differential Backup</h5>
+                        <p>Sao lưu phần thay đổi của DB</p>
+
+                        <a href="@Url.Action("BackupDiff", "Backup")"
+                           class="btn btn-warning w-100">
+                            <i class="fa-solid fa-download me-1"></i> Tạo Diff Backup
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Log Backup -->
+                <div class="col-md-4 mb-3">
+                    <div class="card p-3 shadow-sm hover-card">
+                        <i class="fa-solid fa-file-lines fa-3x text-info mb-3"></i>
+                        <h5 class="fw-bold">Log Backup</h5>
+                        <p>Sao lưu transaction log</p>
+
+                        <a href="@Url.Action("BackupLog", "Backup")"
+                           class="btn btn-info w-100 text-white">
+                            <i class="fa-solid fa-download me-1"></i> Tạo Log Backup
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- LỊCH BACKUP TỰ ĐỘNG -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-light fw-bold">
+            <i class="fa-solid fa-clock me-2"></i>Lịch Backup Tự Động
+        </div>
+
+        <div class="card-body">
+
+            <ul class="list-group">
+
+                <li class="list-group-item">
+                    <strong>Full Backup:</strong>
+                    <span class="text-success fw-bold">3 ngày/lần lúc 22:00</span>
+                </li>
+
+                <li class="list-group-item">
+                    <strong>Differential Backup:</strong>
+                    <span class="text-warning fw-bold">Mỗi ngày lúc 22:00 (trừ ngày full)</span>
+                </li>
+
+                <li class="list-group-item">
+                    <strong>Transaction Log Backup:</strong>
+                    <span class="text-primary fw-bold">
+                        Mỗi 4 giờ → 08:00 • 12:00 • 16:00 • 20:00
+                    </span>
+                </li>
+
+                <li class="list-group-item">
+                    <strong>Tail-Log Backup:</strong>
+                    <span class="text-danger fw-bold">Tự động nếu phát hiện sự cố (NORECOVERY)</span>
+                </li>
+
+            </ul>
+
+        </div>
+    </div>
+
+
+    <div class="text-center mt-4 mb-5">
+        <a href="@Url.Action("Restore", "Backup")"
+           class="btn btn-danger btn-lg px-4 py-2">
+            <i class="fa-solid fa-rotate-right me-2"></i>
+            Thực hiện Restore
+        </a>
+    </div>
+
+</div>
+
+<style>
+    .hover-card {
+        transition: 0.3s;
+        border-radius: 12px;
+    }
+
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+</style>

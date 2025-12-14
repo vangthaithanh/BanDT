@@ -1,65 +1,317 @@
 ﻿@model List<WebDienThoai.Models.GioHang>
 @{
     ViewBag.Title = "Giỏ hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container mt-4">
-    <h3>Giỏ hàng</h3>
+    @Html.Partial("_ResultPopup")
+
+    @* Thông báo *@
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
 
     @if (!Model.Any())
     {
-        <div class="alert alert-info">Giỏ hàng trống. <a href="@Url.Action("Index","Home")">Tiếp tục mua sắm</a></div>
+        <div class="cart-empty">
+            <div class="cart-empty-card">
+                <span class="fs-1 ms-2" style="font-family: 'Font Awesome 6 Free'; font-weight: 900;">&#xf07a;</span>
+                <div class="cart-empty-title mt-3">Giỏ hàng của bạn đang trống</div>
+                <div class="cart-empty-sub mt-3">Hãy chọn thêm sản phẩm để tiếp tục mua sắm.</div>
+                <a class="btn btn-dark cart-empty-btn mt-3" href="@Url.Action("Index","Home")">Tiếp tục mua sắm</a>
+            </div>
+        </div>
     }
     else
     {
-        <table class="table table-bordered align-middle">
-            <thead>
-                <tr>
-                    <th>Ảnh</th>
-                    <th>Sản phẩm</th>
-                    <th>Đơn giá</th>
-                    <th>Số lượng</th>
-                    <th>Thành tiền</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
+        <main class="container px-4 px-lg-5 py-4 flex-grow-1" style="max-width: 900px;">
+
+            <div class="d-flex align-items-center justify-content-between mb-3 px-2">
+                <div class="d-flex align-items-center gap-3">
+                    <label class="custom-checkbox">
+                        <input type="checkbox" id="chkAll" checked>
+                        <span class="checkmark"></span>
+                    </label>
+                    <span class="fw-semibold fs-5">Chọn tất cả</span>
+                </div>
+                <a class="text-secondary text-decoration-none fst-italic small"
+                   href="@Url.Action("Clear","GioHang")"
+                   onclick="return confirm('Bạn có chắc chắn muốn xóa tất cả?');"
+                   style="color: #aa1945;">Xoá tất cả sản phẩm</a>
+            </div>
+
+            <div class="d-flex flex-column gap-3">
                 @foreach (var it in Model)
                 {
-                    <tr>
-                        <td style="width:100px;">
+                    <div class="bg-white p-3 p-md-4 rounded-3 shadow-sm cart-item d-flex align-items-center gap-3" data-masp="@it.MASP" data-price="@it.DONGIA">
+
+                        <div class="flex-shrink-0">
+                            <label class="custom-checkbox">
+                                <input type="checkbox" id="chkAll" checked name="selectedItems" value="@it.MASP" checked>
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+
+                        <div class="flex-shrink-0">
                             @if (!string.IsNullOrEmpty(it.ANH))
                             {
-                                <img src="~/Anh/SanPham/@it.ANH" alt="@it.TENSP" class="img-fluid" />
+                                <img src="~/Content/Anh/sanpham/@it.ANH" alt="@it.TENSP"
+                                     class="rounded-3 border object-fit-cover"
+                                     style="width: 90px; height: 90px;" />
                             }
-                        </td>
-                        <td>@it.TENSP</td>
-                        <td>@it.DONGIA.ToString("N0") đ</td>
-                        <td style="width:200px;">
-                            <form method="post" action="@Url.Action("Update", "GioHang")" class="d-flex align-items-center">
-                                <input type="hidden" name="masp" value="@it.MASP" />
-                                <input type="number" name="soluong" value="@it.SOLUONG" min="0" class="form-control me-2" style="width:100px;" />
-                                <button class="btn btn-secondary" type="submit">Cập nhật</button>
-                            </form>
-                        </td>
-                        <td>@it.ThanhTien.ToString("N0") đ</td>
-                        <td>
-                            <a class="btn btn-danger" href="@Url.Action("Remove","GioHang", new { id = it.MASP })">Xóa</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                        </div>
 
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <a class="btn btn-outline-secondary" href="@Url.Action("Index","Home")">Tiếp tục mua sắm</a>
-                <a class="btn btn-outline-danger ms-2" href="@Url.Action("Clear","GioHang")">Xóa tất cả</a>
+                        <div class="flex-grow-1 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+
+                            <div class="flex-grow-1">
+                                <h5 class="fs-6 fw-bold text-dark mb-1">@it.TENSP</h5>
+                                <div class="d-flex align-items-center gap-2 mt-2">
+                                    <span class="fw-bold fs-5" style="color: #aa1945;">@it.DONGIA.ToString("N0") đ</span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-row flex-md-column align-items-center align-items-md-end justify-content-between gap-3 mt-2 mt-md-0">
+
+                                <a class="btn btn-link text-secondary p-0 border-0"
+                                   href="@Url.Action("Remove","GioHang", new { id = it.MASP })"
+                                   onclick="return confirm('Xác nhận xóa sản phẩm này khỏi giỏ hàng?');"
+                                   title="Xóa sản phẩm" style="color: #333 !important;">
+                                    <i class="fas fa-trash-alt fs-5"></i>
+                                </a>
+                                @*cập nhật sản phẩm*@
+                                <form method="post" action="@Url.Action("Update", "GioHang")" class="quantity-group d-flex align-items-center bg-light rounded" style="background-color: #f0f0f0; border-radius: 4px;">
+                                    <input type="hidden" name="masp" value="@it.MASP" />
+                                    <button class="btn-qty text-secondary border-0 bg-transparent fw-bold"
+                                            type="button"
+                                            onclick="updateQuantity('@it.MASP', -1)">
+                                        -
+                                    </button>
+                                    <input type="number"
+                                           id="quantity-input-@it.MASP"
+                                           name="soluong"
+                                           class="text-center border-0 bg-transparent p-0"
+                                           style="width: 50px; font-weight: 600;"
+                                           value="@it.SOLUONG"
+                                           min="0"
+                                           onkeypress="handleEnterKey(event, '@it.MASP')"
+                                           onchange="validateAndUpdate('@it.MASP')"
+                                           onfocus="this.select()" />
+                                    <button class="btn-qty text-secondary border-0 bg-transparent fw-bold"
+                                            type="button"
+                                            onclick="updateQuantity('@it.MASP', 1)">
+                                        +
+                                    </button>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
-            <div class="text-end">
-                <h5>Tổng: <strong>@ViewBag.TongTien.ToString("N0") đ</strong></h5>
-                <a class="btn btn-primary mt-2" href="#">Thanh toán</a>
+        </main>
+        <div class="cart-footer bg-white border-top py-4 px-4 px-lg-5 mt-4 shadow-sm">
+            <div class="container" style="max-width: 900px;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex flex-column">
+                        <span class="text-secondary small">Tổng thanh toán (@Model.Count() sản phẩm):</span>
+                        <span class="fw-bold fs-5" style="color: #aa1945;">
+                            <span id="tongTienSelected">@ViewBag.TongTien.ToString("N0")</span> đ
+                        </span>
+                    </div>
+
+                    @using (Html.BeginForm("ThanhToan", "GioHang", FormMethod.Post, new { @class = "m-0 p-0", id = "payForm" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit"
+                                id="btnPay"
+                                class="btn rounded-pill px-5 py-2 fw-bold shadow-sm"
+                                style="background-color: #aa1945; color: #fff;"
+                                onclick="return confirm('Xác nhận thanh toán?');">
+                            MUA HÀNG
+                        </button>
+                    }
+
+                </div>
             </div>
         </div>
     }
 </div>
+@section scripts {
+    <script>
+        function ChonUuDai(ma, phantram) {
+            document.getElementById("UuDai_ID").value = ma;
+
+            let tongGoc = parseFloat(document.getElementById("TongTienGoc").value);
+            let giam = tongGoc * phantram / 100;
+            let moi = tongGoc - giam;
+
+            document.getElementById("tienGiam").innerText = giam.toLocaleString();
+            document.getElementById("tongSauGiam").innerText = moi.toLocaleString();
+
+            $('#modalUuDai').modal('hide');
+        }
+    </script>
+}
+
+@*tham khảo để làm nút cập nhật*@
+<script>
+    function updateQuantity(masp, change) {
+        var quantityInput = document.getElementById('quantity-input-' + masp);
+        var form = quantityInput.closest('form');
+        var currentQty = parseInt(quantityInput.value) || 0;
+        var newQty = currentQty + change;
+        if (newQty < 1) {
+            if (confirm('Bạn có muốn xóa sản phẩm này khỏi giỏ hàng?')) {
+                newQty = 0;
+                quantityInput.value = newQty;
+                form.submit();
+            }
+            return;
+        }
+        quantityInput.value = newQty;
+        form.submit();
+    }
+    // Xử lý khi nhấn Enter trong ô input
+    function handleEnterKey(event, masp) {
+        if (event.key === 'Enter' || event.keyCode === 13) {
+            event.preventDefault();
+            validateAndUpdate(masp);
+        }
+    }
+    // Kiểm tra và cập nhật khi người dùng nhập trực tiếp
+    function validateAndUpdate(masp) {
+        var quantityInput = document.getElementById('quantity-input-' + masp);
+        var form = quantityInput.closest('form');
+        var newQty = parseInt(quantityInput.value) || 0;
+        // Kiểm tra giá trị hợp lệ
+        if (newQty < 0) {
+            quantityInput.value = 1;
+            return;
+        }
+        // Nếu số lượng = 0, xác nhận xóa
+        if (newQty === 0) {
+            if (confirm('Bạn có muốn xóa sản phẩm này khỏi giỏ hàng?')) {
+                form.submit();
+            } else {
+                quantityInput.value = 1; // Đặt lại về 1 nếu người dùng hủy
+            }
+            return;
+        }
+        // Cập nhật
+        quantityInput.value = newQty;
+        form.submit();
+    }
+</script>
+<script>
+    (function () {
+        function formatVND(n) {
+            return (n || 0).toLocaleString("vi-VN");
+        }
+
+        function getQtyByMasp(masp) {
+            var el = document.getElementById("quantity-input-" + masp);
+            var v = parseInt(el ? el.value : "0");
+            return isNaN(v) ? 0 : v;
+        }
+
+        function recalcTotalSelected() {
+            var total = 0;
+
+            document.querySelectorAll(".cart-item").forEach(function (row) {
+                var chk = row.querySelector('input.chk-item[name="selectedItems"]');
+                if (!chk || !chk.checked) return;
+
+                var masp = row.getAttribute("data-masp");
+                var price = parseFloat(row.getAttribute("data-price") || "0");
+                var qty = getQtyByMasp(masp);
+
+                total += price * qty;
+            });
+
+            var tongEl = document.getElementById("tongTienSelected");
+            if (tongEl) tongEl.textContent = formatVND(total);
+        }
+
+        // gắn class cho checkbox item (không đổi UI)
+        document.querySelectorAll('input[type="checkbox"][name="selectedItems"]').forEach(function (c) {
+            c.classList.add("chk-item");
+        });
+
+        // Tick/bỏ tick item => cập nhật tổng
+        document.querySelectorAll(".chk-item").forEach(function (chk) {
+            chk.addEventListener("change", function () {
+                recalcTotalSelected();
+                syncChkAll();
+            });
+        });
+
+        // Chọn tất cả
+        var chkAll = document.getElementById("chkAll");
+        function syncChkAll() {
+            if (!chkAll) return;
+            var items = document.querySelectorAll(".chk-item");
+            if (items.length === 0) return;
+            var checkedCount = document.querySelectorAll(".chk-item:checked").length;
+            chkAll.checked = (checkedCount === items.length);
+        }
+
+        if (chkAll) {
+            chkAll.addEventListener("change", function () {
+                var on = chkAll.checked;
+                document.querySelectorAll(".chk-item").forEach(function (c) { c.checked = on; });
+                recalcTotalSelected();
+            });
+        }
+
+        // Trước khi submit thanh toán: nhét các masp đã tick vào form
+        var payForm = document.getElementById("payForm");
+        if (payForm) {
+            payForm.addEventListener("submit", function (e) {
+                // xóa hidden cũ
+                payForm.querySelectorAll('input[name="selectedItems"][data-generated="1"]').forEach(function (x) {
+                    x.remove();
+                });
+
+                var selected = Array.from(document.querySelectorAll(".chk-item:checked"))
+                    .map(function (x) { return x.value; });
+
+                if (selected.length === 0) {
+                    e.preventDefault();
+                    alert("Bạn chưa chọn sản phẩm để thanh toán.");
+                    return;
+                }
+
+                selected.forEach(function (masp) {
+                    var h = document.createElement("input");
+                    h.type = "hidden";
+                    h.name = "selectedItems";
+                    h.value = masp;
+                    h.setAttribute("data-generated", "1");
+                    payForm.appendChild(h);
+                });
+            });
+        }
+
+        // lần đầu
+        syncChkAll();
+        recalcTotalSelected();
+    })();
+</script>
+
+<style>
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+</style>

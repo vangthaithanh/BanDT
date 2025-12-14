@@ -1,0 +1,81 @@
+﻿@using System
+
+@{
+    // Chỉ hiện menu này cho nhân viên/quản trị
+    var role = Session["Role"] as string ?? "KHACH";
+    var isNhanVien = Session["IsNhanVien"] != null && Convert.ToBoolean(Session["IsNhanVien"]);
+    if (!isNhanVien || role == "KHACH") { return; }
+}
+
+@functions{
+    string ActiveCtrl(string controller)
+    {
+        var c = (ViewContext.RouteData.Values["controller"] ?? "").ToString();
+        return string.Equals(c, controller, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+    }
+}
+
+<div class="bg-white p-3 rounded-3 shadow-sm h-100 left-menu">
+    <div class="d-flex align-items-center gap-2 mb-2">
+        <img src="~/Anh/logo/headerlogo.png" style="height:40px;" alt="logo" />
+        <div class="fw-bold">QUẢN TRỊ</div>
+    </div>
+
+    <nav class="nav flex-column">
+        @* GIỮ NGUYÊN LINK *@
+        <a class="menu-item nav-link d-flex align-items-center gap-3 p-3 rounded-3 text-secondary fw-semibold mb-1 @ActiveCtrl("Home")"
+           href="@Url.Action("Index","Home")">
+            <i class="fa-solid fa-cart-shopping"></i><span>Mua hàng</span>
+        </a>
+
+        @* ADMIN *@
+        @if (role == "ADMIN")
+        {
+            <a class="menu-item nav-link d-flex align-items-center gap-3 p-3 rounded-3 text-secondary fw-medium mb-1 @ActiveCtrl("QuanLyNhanSu")"
+               href="@Url.Action("Index","QuanLyNhanSu")">
+                <i class="fa-solid fa-user-gear"></i><span>Quản lý nhân sự</span>
+            </a>
+        }
+
+        @* ADMIN + NVKHO *@
+        @if (role == "ADMIN" || role == "NVKHO")
+        {
+            <a class="menu-item nav-link d-flex align-items-center gap-3 p-3 rounded-3 text-secondary fw-medium mb-1 @ActiveCtrl("QuanLyKho")"
+               href="@Url.Action("Index","QuanLyKho")">
+                <i class="fa-solid fa-warehouse"></i><span>Quản lý kho</span>
+            </a>
+        }
+
+        @* ADMIN + NVSP *@
+        @if (role == "ADMIN" || role == "NVSP")
+        {
+            <a class="menu-item nav-link d-flex align-items-center gap-3 p-3 rounded-3 text-secondary fw-medium mb-1 @ActiveCtrl("QuanLySanPham")"
+               href="@Url.Action("Index","QuanLySanPham")">
+                <i class="fa-solid fa-box"></i><span>Quản lý sản phẩm</span>
+            </a>
+        }
+        <a class="menu-item nav-link d-flex align-items-center gap-3 p-3 rounded-3 text-secondary fw-medium mb-1 @ActiveCtrl("QuanLyDonHang")"
+           href="@Url.Action("Index", "QuanLyDonHang")">
+            <i class="fa-solid fa-receipt"></i><span>Quản lý đơn hàng</span>
+        </a>
+        <a class="menu-item nav-link d-flex align-items-center gap-3 p-3 rounded-3 text-secondary fw-medium mb-1 @ActiveCtrl("TimKiemCuaHang")"
+           href="@Url.Action("Index","TimKiemCuaHang")">
+            <i class="fa-solid fa-magnifying-glass"></i><span>Tìm kiếm cửa hàng</span>
+        </a>
+        @if (role == "ADMIN" || role == "NVSP")
+        {
+            <a class="menu-item nav-link d-flex align-items-center gap-3 p-3 rounded-3 text-secondary fw-medium mb-1 @ActiveCtrl("GopY")"
+               href="#">
+                <i class="fa-solid fa-comment-dots"></i><span>Quản lý đánh giá</span>
+            </a>
+        }
+        @if (role == "ADMIN" )
+        {
+            <a class="menu-item nav-link d-flex align-items-center gap-3 p-3 rounded-3 text-secondary fw-medium mb-1 @ActiveCtrl("ThongTinCaNhan")"
+               href="#">
+                <i class="fa-solid fa-id-card"></i><span>Thống kê doanh thu</span>
+            </a>
+        }
+            <hr class="my-3 text-secondary" />
+        </nav>
+</div>

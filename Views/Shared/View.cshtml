@@ -1,0 +1,20 @@
+﻿@{
+    var userName = Session["UserName"] as string;
+    var hoTen = Session["HoTen"] as string;
+    var role = Session["Role"] as string ?? "KHACH";
+    //tạo header riêng cho quản trị
+    
+}
+<nav class="navbar navbar-expand-lg header" style="background-color:#eae2d7;">
+    <a class="navbar-brand" href='@Url.Action("Index", "Home")'>
+        <img class="header-img" src="~/Anh/logo/headerlogo.png" alt="Logo" />
+        <span class="fw-bold" style="font-size:22px;">QUẢN TRỊ</span>
+    </a>
+    <a class="ms-auto d-flex align-items-center gap-2 px-3 py-2 me-5 rounded-pill text-decoration-none"
+       style="background:#f4ebdf; color:#000;"
+        href="@Url.Action("ThongTinCaNhan", "Account")"
+                                    @*href="@Url.Action("Backup", "Account")*@>
+        <i class="fa-solid fa-user"></i>
+        <span class="fw-bold">@(!string.IsNullOrEmpty(hoTen) ? hoTen : userName)</span>
+    </a>
+</nav>

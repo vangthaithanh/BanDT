@@ -5,6 +5,7 @@
 }
 
 <main class="container">
+    @Html.Partial("_ResultPopup")
     <div class="row product-page-container">
         <div class="col-lg-6 border-end">
             <h1 class="product-title ">@Model.TENSP</h1>
@@ -103,15 +104,139 @@
                 </div>
             </div>
 
-            <div class="d-grid gap-3 mt-4">
-                <a class="custom-btn" id="mua" href="@Url.Action("Index", "GioHang")">MUA NGAY</a>
+            <div class="mt-4">
 
-                <form method="get" action="@Url.Action("Add", "GioHang")" class="d-flex align-items-center gap-2">
-                    <input type="hidden" name="id" value="@Model.MASP" />
-                    <input type="number" name="qty" value="1" min="1" class="form-control" style="width:100px;" />
-                    <button type="submit" class="custom-btn" id="themVaoGioHang">THÊM VÀO GIỎ HÀNG</button>
+                <div class="row g-2 mb-3">
+
+                    <div class="col-6">
+                        <button class="w-100 btn fw-bold text-uppercase custom-btn"
+                                style="background-color: #eae2d7; color: #333; padding: 12px 0; border-radius: 8px;"
+                                onclick="$('#modalUuDai').load('/GioHang/UuDaiSanPham/@Model.MASP').modal('show')">
+                            ƯU ĐÃI
+                        </button>
+                    </div>
+
+                    <div class="col-6">
+                        @using (Html.BeginForm("MuaNgay", "GioHang", FormMethod.Post, new { @class = "d-grid h-100" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="masp" value="@Model.MASP" />
+                            <input type="hidden" name="soluong" value="1" />
+
+                            <button type="submit" class="w-100 btn fw-bold text-uppercase custom-btn"
+                                    style="background-color: #eae2d7; color: #333; padding: 12px 0; border-radius: 8px;"
+                                    onclick="return confirm('Xác nhận mua ngay');">
+                                MUA NGAY
+                            </button>
+                        }
+                    </div>
+                </div>
+                <div id="modalUuDai" class="modal fade"></div>
+                <form method="get" action="@Url.Action("Add", "GioHang")" class="d-flex align-items-center gap-2 mb-3">
+                    <div class="d-flex flex-column align-items-start" style="width: 120px;">
+                        <small class="fw-bold mb-1">SỐ LƯỢNG</small>
+                        <input type="hidden" name="id" value="@Model.MASP" />
+                        <input type="number" name="qty" value="1" min="1" class="form-control text-center p-2"
+                               style="border-radius: 8px; max-width: 100px;" />
+                    </div>
+                    <button type="submit" class="btn fw-bold text-uppercase flex-grow-1 custom-btn"
+                            style="background-color: #eae2d7; color: #333; padding: 12px 0; border-radius: 8px;">
+                        THÊM GIỎ HÀNG
+                    </button>
                 </form>
+                @* khung đánh giá *@
+                <div class="card border-0 shadow-sm rounded-3" style="width: 100%; max-width: 600px; background-color: #fff;">
+                    <div class="card-body p-4">
+
+                        <h5 class="fw-bold mb-4 text-dark">Đánh giá</h5>
+
+                        <div class="review-list d-flex flex-column gap-4">
+
+                            <div class="d-flex gap-3 border-bottom pb-3">
+                                <div class="review-avatar flex-shrink-0">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <span class="fw-bold text-dark fs-6">Lê Nguyễn Xuân Thu</span>
+                                        <span class="small text-secondary" style="font-size: 0.8rem;">5 tháng trước</span>
+                                    </div>
+                                    <div class="star-rating mb-2">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                    </div>
+                                    <p class="text-secondary mb-0 small">Tuyệt vời !</p>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-3 border-bottom pb-3">
+                                <div class="review-avatar flex-shrink-0">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <span class="fw-bold text-dark fs-6">Lê Nguyễn Xuân Thu</span>
+                                        <span class="small text-secondary" style="font-size: 0.8rem;">5 tháng trước</span>
+                                    </div>
+                                    <div class="star-rating mb-2">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                    </div>
+                                    <p class="text-secondary mb-0 small">Tuyệt vời !</p>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-3">
+                                <div class="review-avatar flex-shrink-0">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <span class="fw-bold text-dark fs-6">Lê Nguyễn Xuân Thu</span>
+                                        <span class="small text-secondary" style="font-size: 0.8rem;">5 tháng trước</span>
+                                    </div>
+                                    <div class="star-rating mb-2">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                    </div>
+                                    <p class="text-secondary mb-0 small">Tuyệt vời !</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button class="btn btn-view-all rounded-pill px-4 py-2 w-100">
+                                Xem tất cả đánh giá &gt;
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 </main>
+@section scripts {
+    <script>
+        function ChonUuDai(ma, phantram) {
+            let giaBan = parseFloat(document.getElementById("GiaBanGoc").value);
+            let giam = giaBan * phantram / 100;
+            let moi = giaBan - giam;
+
+            document.getElementById("giaGiam").innerText = giam.toLocaleString();
+            document.getElementById("giaSauGiam").innerText = moi.toLocaleString();
+
+            $('#modalUuDai').modal('hide');
+        }
+    </script>
+}

@@ -1,20 +1,55 @@
-# Visual Studio
+﻿## ========== Visual Studio / .NET Framework WinForms ==========
+# Visual Studio working folder
 .vs/
-*.user
+
+# User-specific files
 *.suo
+*.user
+*.rsuser
+*.userosscache
+*.sln.docstates
+
+# Build outputs
+[Bb]in/
+[Oo]bj/
+[Dd]ebug*/
+[Rr]elease*/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+[Ll]og/
+*.pdb
 *.cache
-*.dbmdl
 
-# Build folders
-bin/
-obj/
+# ClickOnce / Publish
+publish/
+*.Publish.xml
+*.pubxml
+*.pubxml.user
+AppPackages/
 
-# NuGet
+# NuGet (WinForms .NET Framework hay dùng packages.config)
+# Khuyến nghị: KHÔNG commit packages/ để repo gọn
 packages/
-*.nupkg
 
-# IIS Express
-/ApplicationHost.config
+# NuGet tooling folder (thường nên giữ trong repo nếu bạn có .nuget/NuGet.Config riêng)
+# Nếu không dùng, có thể ignore toàn bộ .nuget/
+#.nuget/
 
-# Others
-*.log
+# Test results
+TestResult*/
+*.trx
+*.coverage
+*.coveragexml
+
+# IDEs
+.idea/
+.vscode/
+
+# OS junk
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+.DS_Store

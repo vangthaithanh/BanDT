@@ -1,0 +1,266 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #fdfaf7; /* Màu nền be nhạt */
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+}
+
+/* Nút Quay về */
+.back-btn {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    text-decoration: none;
+    color: #6c757d;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+    background: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+    .back-btn:hover {
+        color: #A76D6D;
+        transform: translateX(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+/* Khung Trắng (Login/Register Container) */
+.login-container {
+    width: 100%;
+    /* BỎ max-height: 500px để nó co giãn theo nội dung */
+    max-width: 450px; /* Tối ưu hóa cho trang Đăng nhập */
+    background: white;
+    border-radius: 12px;
+    padding: 50px 40px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+}
+
+/* Header */
+.form-header {
+    text-align: center;
+    margin-bottom: 30px; /* Khoảng cách hợp lý */
+}
+
+.form-title {
+    font-size: 24px;
+    color: #A76D6D;
+    font-weight: 700;
+    margin-bottom: 10px; /* Khoảng cách hợp lý */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Form Group */
+.form-group {
+    margin-bottom: 25px; /* Khoảng cách giữa các trường */
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px; /* Khoảng cách giữa label và input */
+}
+
+/* Input */
+.input-wrapper {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #999;
+    transition: color 0.3s;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 14px 20px 14px 45px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: all 0.3s;
+    font-family: inherit;
+    background: #fff;
+}
+
+input::placeholder {
+    color: #aaa;
+}
+
+input:focus {
+    outline: none;
+    border-color: #A76D6D;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(167, 109, 109, 0.1);
+}
+
+    input:focus + .input-icon,
+    .input-wrapper:focus-within .input-icon {
+        color: #A76D6D;
+    }
+
+/* Nút Đăng nhập */
+.btn-submit {
+    width: 100%;
+    padding: 16px;
+    background: #e7dbc4; /* MÀU BE/TAN CỦA ẢNH MẪU */
+    color: #333; /* ĐỔI MÀU CHỮ SANG ĐEN */
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+}
+
+    .btn-submit:hover {
+        background: #dfd5c4;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+/* Dấu chia "Hoặc" */
+.divider {
+    text-align: center;
+    margin: 30px 0;
+    position: relative;
+}
+
+    .divider::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 100%;
+        height: 1px;
+        background: #eee;
+    }
+
+    .divider span {
+        background: white;
+        padding: 0 15px;
+        color: #999;
+        font-size: 13px;
+        position: relative;
+    }
+
+/* Social Login */
+.social-login {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.social-btn {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+    .social-btn:hover {
+        border-color: #A76D6D;
+        background: #fffaf5;
+        color: #A76D6D;
+    }
+
+    .social-btn i {
+        font-size: 18px;
+    }
+
+/* Register/Forgot Link */
+.register-link {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+}
+
+    .register-link a {
+        color: #A76D6D;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+        .register-link a:hover {
+            color: #8e5b5b;
+            text-decoration: underline;
+        }
+
+/* Media Query (giữ nguyên) */
+@media (max-width: 480px) {
+    .login-container {
+        padding: 40px 25px;
+    }
+
+    .back-btn span {
+        display: none;
+    }
+
+    .social-login {
+        grid-template-columns: 1fr;
+    }
+}
+/* Tối ưu hóa selector trong login.css */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"] { /* <<< THÊM DÒNG NÀY VÀO */
+    width: 100%;
+    padding: 14px 20px 14px 45px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: all 0.3s;
+    font-family: inherit;
+    background: #fff;
+}
+
+/* Tương tự, thêm vào input:focus */
+input:focus {
+    outline: none;
+    border-color: #A76D6D;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(167, 109, 109, 0.1);
+}
+/* Sau đó, không cần thay đổi gì trong file Register.cshtml nữa. */

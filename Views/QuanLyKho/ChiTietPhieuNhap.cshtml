@@ -1,46 +1,51 @@
 ﻿@model WebDienThoai.Models.ViewModels.PhieuNhapDetailVM
 @{
     ViewBag.Title = "Chi tiết phiếu nhập";
+    Layout = "~/Views/Shared/_LayoutQT.cshtml";
 }
 
-<h2>Chi tiết phiếu nhập</h2>
+<div class="bg-white p-4 rounded-3 shadow-sm">
+    <div class="d-flex flex-column " style="min-height: 80vh;">
+        <h2>Chi tiết phiếu nhập</h2>
 
-<div class="panel panel-default">
-    <div class="panel-body">
-        <div><b>Mã phiếu:</b> @Model.PhieuNhap.MAPHIEUNHAP</div>
-        <div><b>Ngày nhập:</b> @Model.PhieuNhap.NGAYNHAP.ToString("yyyy-MM-dd HH:mm")</div>
-        <div><b>Nhà cung cấp:</b> @Model.PhieuNhap.NHACUNGCAP</div>
-        <div>
-            <b>Kho:</b> @Model.PhieuNhap.MAKHO @if (!string.IsNullOrWhiteSpace(Model.PhieuNhap.TENKHO))
-            {<span>- @Model.PhieuNhap.TENKHO</span>}
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div><b>Mã phiếu:</b> @Model.PhieuNhap.MAPHIEUNHAP</div>
+                <div><b>Ngày nhập:</b> @Model.PhieuNhap.NGAYNHAP.ToString("yyyy-MM-dd HH:mm")</div>
+                <div><b>Nhà cung cấp:</b> @Model.PhieuNhap.NHACUNGCAP</div>
+                <div>
+                    <b>Kho:</b> @Model.PhieuNhap.MAKHO @if (!string.IsNullOrWhiteSpace(Model.PhieuNhap.TENKHO))
+                    {<span>- @Model.PhieuNhap.TENKHO</span>}
+                </div>
+                <div><b>Tổng giá:</b> @Model.PhieuNhap.TONGGIA.ToString("N0")</div>
+            </div>
         </div>
-        <div><b>Tổng giá:</b> @Model.PhieuNhap.TONGGIA.ToString("N0")</div>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Mã SP</th>
+                    <th class="text-right">Số lượng</th>
+                    <th class="text-right">Giá nhập</th>
+                    <th class="text-right">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model.ChiTiet)
+                {
+                    var thanhTien = c.SOLUONG * c.GIANHAP;
+                    <tr>
+                        <td>@c.MASP</td>
+                        <td class="text-right">@c.SOLUONG</td>
+                        <td class="text-right">@c.GIANHAP.ToString("N0")</td>
+                        <td class="text-right">@thanhTien.ToString("N0")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <p class="text-right">
+            @Html.ActionLink("Quay lại danh sách", "PhieuNhap", new { maKho = Model.PhieuNhap.MAKHO }, new { @class = "btn btn-default" })
+        </p>
     </div>
-</div>
-
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Mã SP</th>
-            <th class="text-right">Số lượng</th>
-            <th class="text-right">Giá nhập</th>
-            <th class="text-right">Thành tiền</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var c in Model.ChiTiet)
-        {
-            var thanhTien = c.SOLUONG * c.GIANHAP;
-            <tr>
-                <td>@c.MASP</td>
-                <td class="text-right">@c.SOLUONG</td>
-                <td class="text-right">@c.GIANHAP.ToString("N0")</td>
-                <td class="text-right">@thanhTien.ToString("N0")</td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<p class="text-right">
-    @Html.ActionLink("Quay lại danh sách", "PhieuNhap", new { maKho = Model.PhieuNhap.MAKHO }, new { @class = "btn btn-default" })
-</p>
+</div> 

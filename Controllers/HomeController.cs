@@ -61,7 +61,6 @@ namespace WebDienThoai.Controllers
                     }
                 }
             }
-
             return list;
         }
         // Trang chủ
@@ -136,7 +135,7 @@ namespace WebDienThoai.Controllers
             ViewBag.BreadcrumbList = new List<WebDienThoai.Models.BreadcrumbItem>
             {
                 new WebDienThoai.Models.BreadcrumbItem { Text = "Trang chủ", Action = "Index", Controller = "Home" },
-                new WebDienThoai.Models.BreadcrumbItem { Text = "Duyet theo loai", Action = "Duyet", Controller = "Home", RouteValues = new { maloai = maloai } }
+                new WebDienThoai.Models.BreadcrumbItem { Text = "Duyệt theo loại", Action = "Duyet", Controller = "Home", RouteValues = new { maloai = maloai } }
             };
 
             ViewBag.MaLoai = maloai;
@@ -204,9 +203,55 @@ namespace WebDienThoai.Controllers
                 new WebDienThoai.Models.BreadcrumbItem { Text = "Lọc sản phẩm" }
             };
 
-            // dùng lại view Duyet (hoặc view nào anh muốn hiển thị danh sách)
             return View("Duyet", list);
         }
+
+        //tìm kiếm ở thanh tìm kiếm (theo loại, theo hàng hoặc theo tên sản phẩm)
+        [HttpGet]
+        public ActionResult TimKiem(string q)
+        {
+            var list = new List<SanPhamViewModel>();
+            string connStr = GetConnStr();
+            using (var conn = new SqlConnection(connStr))
+            using (var cmd = new SqlCommand("sp_SanPham_Search", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                // tìm kiếm
+                var pQ = cmd.Parameters.Add("@q", SqlDbType.NVarChar, 200);
+                pQ.Value = string.IsNullOrWhiteSpace(q) ? (object)DBNull.Value : q.Trim();
+                conn.Open();
+                using (var rd = cmd.ExecuteReader())
+                {
+                    while (rd.Read())
+                    {
+                        list.Add(new SanPhamViewModel
+                        {
+                            MASP = (int)rd["MASP"],
+                            TENSP = rd["TENSP"].ToString(),
+                            GIABAN = (decimal)rd["GIABAN"],
+                            ANH = rd["ANH"] == DBNull.Value ? null : rd["ANH"].ToString(),
+                            MALOAI = rd["MALOAI"] == DBNull.Value ? 0 : (int)rd["MALOAI"]
+                        });
+                    }
+                }
+            }
+            //Giữ keyword để view hiển thị / giữ lại ô search
+            ViewBag.Keyword = q;
+            //Nếu view Duyet đang có form lọc, set rỗng để không trùng filter cũ
+            ViewBag.MaLoai = null;
+            ViewBag.Hang = null;
+            ViewBag.GiaMin = null;
+            ViewBag.GiaMax = null;
+            ViewBag.Breadcrumb = "Trang chủ / Tìm kiếm";
+            ViewBag.BreadcrumbList = new List<WebDienThoai.Models.BreadcrumbItem>
+    {
+        new WebDienThoai.Models.BreadcrumbItem { Text = "Trang chủ", Action = "Index", Controller = "Home" },
+        new WebDienThoai.Models.BreadcrumbItem { Text = "Tìm kiếm" }
+    };
+
+            return View("Duyet", list);
+        }
+
 
         //Xem chi tiết sản phẩm
         private XemChiTietModel GetProductDetail(int id)
@@ -263,6 +308,25 @@ namespace WebDienThoai.Controllers
 
             return View(model);
         }
+
+        public ActionResult QuanTri()
+        {
+            var role = (Session["Role"] as string) ?? "KHACH";
+            var isNhanVien = Session["IsNhanVien"] != null && Convert.ToBoolean(Session["IsNhanVien"]);
+
+            if (!isNhanVien || role == "KHACH")
+                return RedirectToAction("Index", "Home"); // chặn khách
+
+            ViewBag.BreadcrumbList = new List<WebDienThoai.Models.BreadcrumbItem>
+    {
+        new WebDienThoai.Models.BreadcrumbItem { Text = "Trang chủ", Action = "Index", Controller = "Home" },
+        new WebDienThoai.Models.BreadcrumbItem { Text = "Quản trị" }
+    };
+
+            return View(); // Views/Home/QuanTri.cshtml
+        }
+
+
 
     }
 }

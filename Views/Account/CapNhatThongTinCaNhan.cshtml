@@ -1,0 +1,130 @@
+﻿@model WebDienThoai.Models.ThongTinNguoiDung
+@{
+    ViewBag.Title = "Cập Nhật Thông Tin Cá Nhân";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Giữ nguyên Layout
+}
+
+@section Breadcrumb {
+    @ViewBag.Breadcrumb
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h3 class="text-center mb-4 fw-bold">Hồ Sơ Của Bạn</h3>
+
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success text-center">@TempData["Success"]</div>
+                    }
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger text-center">@TempData["Error"]</div>
+                    }
+
+                    @using (Html.BeginForm("CapNhatThongTinCaNhan", "Account", FormMethod.Post, new { @class = "p-3" }))
+                    {
+
+                        @Html.AntiForgeryToken()
+
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
+
+                        <div class="row mb-3 align-items-center">
+                            <div class="col-4">
+                                <label class="col-form-label fw-semibold">Tên tài khoản</label>
+                            </div>
+                            <div class="col-8">
+                                @Html.TextBoxFor(m => m.TenTK, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+
+                        <div class="mb-3 border-bottom pb-1 mt-4">
+                            <span class="small text-uppercase text-muted fw-semibold">
+                                Thông tin cá nhân
+                            </span>
+                        </div>
+
+                        <div class="row mb-3 align-items-center">
+                            <div class="col-4 col-form-label fw-semibold">
+                                Họ Tên
+                            </div>
+                            <div class="col-8">
+                                @Html.TextBoxFor(m => m.HoTen, new { @class = "form-control", placeholder = "Họ và tên" })
+                                @Html.ValidationMessageFor(m => m.HoTen, "", new { @class = "text-danger small" })
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 align-items-center">
+                            <div class="col-4 col-form-label fw-semibold">
+                                Số điện thoại
+                            </div>
+                            <div class="col-8">
+                                @Html.TextBoxFor(m => m.SDT, new { @class = "form-control", placeholder = "Số điện thoại" })
+                                @Html.ValidationMessageFor(m => m.SDT, "", new { @class = "text-danger small" })
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 align-items-center">
+                            <div class="col-4 col-form-label fw-semibold">
+                                Email
+                            </div>
+                            <div class="col-8">
+                                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Email" })
+                                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger small" })
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 align-items-center">
+                            <div class="col-4 col-form-label fw-semibold">
+                                Địa chỉ
+                            </div>
+                            <div class="col-8">
+                                @Html.TextBoxFor(m => m.DiaChi, new { @class = "form-control", placeholder = "Địa chỉ liên hệ" })
+                                @Html.ValidationMessageFor(m => m.DiaChi, "", new { @class = "text-danger small" })
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 align-items-center">
+                            <div class="col-4 col-form-label fw-semibold">
+                                Giới Tính
+                            </div>
+                            <div class="col-8">
+                                @Html.DropDownListFor(
+                                    m => m.GioiTinh,
+                                    new List<SelectListItem>
+                                    {
+                                        new SelectListItem { Text = "Nam", Value = "Nam" },
+                                        new SelectListItem { Text = "Nữ",  Value = "Nữ" }
+                                    },
+                                    "-- Chọn giới tính --",
+                                    new { @class = "form-control" }
+                                )
+                                @Html.ValidationMessageFor(m => m.GioiTinh, "", new { @class = "text-danger small" })
+                            </div>
+                        </div>
+
+
+                        <div class="row mb-4 align-items-center">
+                            <div class="col-4 col-form-label fw-semibold">
+                                Dân tộc
+                            </div>
+                            <div class="col-8">
+                                @Html.TextBoxFor(m => m.DanToc, new { @class = "form-control", placeholder = "Ví dụ: Kinh" })
+                                @Html.ValidationMessageFor(m => m.DanToc, "", new { @class = "text-danger small" })
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-100 btn fw-bold text-uppercase custom-btn">
+                            Lưu thông tin
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

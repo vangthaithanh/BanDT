@@ -1,0 +1,133 @@
+﻿@model WebDienThoai.Models.HoaDonViewModel
+@{
+    ViewBag.Title = "Chọn phương thức thanh toán";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5 mb-5" style="max-width: 800px;">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold" style="color: #aa1945;">Chọn phương thức thanh toán</h2>
+        <p class="text-muted">Vui lòng chọn phương thức thanh toán phù hợp</p>
+    </div>
+
+    <!-- Thông tin hóa đơn -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title fw-bold mb-3">Thông tin đơn hàng</h5>
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <strong>Mã hóa đơn:</strong> #@Model.MAHD
+                </div>
+                <div class="col-md-6 mb-2">
+                    <strong>Ngày tạo:</strong> @Model.NGAYLAPHD.ToString("dd/MM/yyyy HH:mm")
+                </div>
+                <div class="col-md-6 mb-2">
+                    <strong>Khách hàng:</strong> @Model.TENKH
+                </div>
+                <div class="col-md-6 mb-2">
+                    <strong>SĐT:</strong> @Model.SDT
+                </div>
+                <div class="col-12 mb-2">
+                    <strong>Địa chỉ:</strong> @Model.DIACHI
+                </div>
+                <div class="col-12 mt-3">
+                    <h4 class="fw-bold" style="color: #aa1945;">
+                        Tổng tiền: @Model.TONGTIEN.ToString("N0") đ
+                    </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phương thức thanh toán -->
+    <div class="row g-3">
+        <!-- MoMo -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm payment-method-card" onclick="selectPayment('momo')">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <img src="https://developers.momo.vn/v3/img/logo.svg"
+                             alt="MoMo"
+                             style="height: 60px;">
+                    </div>
+                    <h5 class="fw-bold mb-2">Ví MoMo</h5>
+                    <p class="text-muted small mb-3">Thanh toán qua ví điện tử MoMo</p>
+
+                    @using (Html.BeginForm("ThanhToanMoMo", "GioHang", FormMethod.Post, new { @id = "form-momo" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="mahd" value="@Model.MAHD" />
+                        <button type="submit" class="btn btn-primary w-100 fw-bold">
+                            <i class="fas fa-wallet me-2"></i>Chọn MoMo
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Tiền mặt (Tạm thời disable) -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm payment-method-card disabled">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-money-bill-wave" style="font-size: 60px; color: #28a745;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Tiền mặt</h5>
+                    <p class="text-muted small mb-3">Thanh toán khi nhận hàng (COD)</p>
+                    <button type="button" class="btn btn-secondary w-100 fw-bold" disabled>
+                        <i class="fas fa-lock me-2"></i>Sắp ra mắt
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nút quay lại -->
+    <div class="text-center mt-4">
+        <a href="@Url.Action("Index", "GioHang")" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại giỏ hàng
+        </a>
+    </div>
+</div>
+
+<style>
+    .payment-method-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid #e0e0e0;
+    }
+
+        .payment-method-card:hover:not(.disabled) {
+            border-color: #aa1945;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(170, 25, 69, 0.2) !important;
+        }
+
+        .payment-method-card.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+            .payment-method-card.disabled:hover {
+                transform: none;
+                box-shadow: none !important;
+            }
+
+    .btn-primary {
+        background-color: #aa1945;
+        border-color: #aa1945;
+    }
+
+        .btn-primary:hover {
+            background-color: #8a1537;
+            border-color: #8a1537;
+        }
+</style>
+
+<script>
+    function selectPayment(method) {
+        if (method === 'momo') {
+            document.getElementById('form-momo').submit();
+        }
+    }
+</script>

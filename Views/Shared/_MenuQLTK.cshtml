@@ -1,0 +1,61 @@
+﻿@using System
+
+@{
+    var role = Session["Role"] as string ?? "KHACH";
+}
+ 
+@functions{
+    string ActiveCtrl(string controller)
+    {
+        var c = (ViewContext.RouteData.Values["controller"] ?? "").ToString();
+        return string.Equals(c, controller, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+    }
+}
+
+<div class="col-12 col-lg-3">
+    <div class="bg-white p-3 rounded-3 shadow-sm h-100">
+        <nav class="nav flex-column">
+            <a class="menu-item nav-link d-flex align-items-center gap-3 p-3 rounded-3 text-secondary fw-medium mb-1 @ActiveCtrl("Account")"
+               href="@Url.Action("ThongTinCaNhan","Account")">
+                <i class="fas fa-user-circle fs-6"></i><span>Thông tin cá nhân</span>
+            </a>
+            <a href="@Url.Action("LichSuMuaHang","DonHang")" class="menu-item nav-link d-flex align-items-center gap-3 p-3 rounded-3 text-secondary hover-accent fw-medium mb-1 @ActiveCtrl("DonHang")">
+                <i class="fas fa-history fs-6"></i>
+                <span>Lịch sử mua hàng</span>
+            </a>
+            <a class="menu-item nav-link d-flex align-items-center gap-3 p-3 rounded-3 text-secondary hover-accent fw-medium mb-1">
+                <i class="fas fa-ticket-alt fs-6"></i>
+                <span>Phiếu khuyến mãi</span>
+            </a>
+            <a href="#" class="menu-item nav-link d-flex align-items-center gap-3 p-3 rounded-3 text-secondary hover-accent fw-medium mb-1">
+                <i class="fas fa-shield-alt fs-6"></i>
+                <span>Chính sách bảo hành</span>
+            </a>
+            <a href="#" class="menu-item nav-link d-flex align-items-center gap-3 p-3 rounded-3 text-secondary hover-accent fw-medium mb-1">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>Ưu đãi sinh viên</span>
+            </a>
+            <a href="#" class="menu-item nav-link d-flex align-items-center gap-3 p-3 rounded-3 text-secondary hover-accent fw-medium mb-1">
+                <i class="fas fa-map-marker-alt fs-6"></i>
+                <span>Tìm kiếm cửa hàng</span>
+            </a>
+            <a href="#" class="menu-item nav-link d-flex align-items-center gap-3 p-3 rounded-3 text-secondary hover-accent fw-medium mb-1">
+                <i class="fas fa-comments fs-6"></i>
+                <span>Góp ý - phản hồi</span>
+            </a>
+            <a href="#" class="menu-item nav-link d-flex align-items-center gap-3 p-3 rounded-3 text-secondary hover-accent fw-medium mb-1">
+                <i class="fas fa-book-open fs-6"></i>
+                <span>Điều khoản sử dụng</span>
+            </a>
+
+            <hr class="my-3 text-secondary">
+
+            <a class="menu-item nav-link d-flex align-items-center gap-3 p-3 rounded-3 text-secondary fw-medium"
+               href="@Url.Action("Logout","Account")">
+                <i class="fa-solid fa-right-from-bracket"></i><span>Đăng xuất</span>
+            </a>
+        </nav>
+    </div>
+</div>
+
+

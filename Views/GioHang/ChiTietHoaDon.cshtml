@@ -1,0 +1,244 @@
+﻿@model WebDienThoai.Models.HoaDonChiTietViewModel
+@{
+    ViewBag.Title = "Chi tiết hóa đơn #" + Model.HoaDon.MAHD;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5 mb-5" style="max-width: 900px;">
+    @Html.Partial("_ResultPopup")
+
+    <!-- Success Animation -->
+    <div class="text-center mb-4 success-header">
+        <div class="success-icon-wrapper">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2 class="fw-bold mt-3" style="color: #28a745;">Đặt hàng thành công!</h2>
+        <p class="text-muted">Cảm ơn bạn đã mua hàng. Đơn hàng của bạn đã được xác nhận.</p>
+    </div>
+
+    <!-- Thông tin hóa đơn -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header" style="background-color: #aa1945; color: white;">
+            <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Thông tin hóa đơn</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="info-item">
+                        <i class="fas fa-hashtag text-muted me-2"></i>
+                        <strong>Mã hóa đơn:</strong>
+                        <span class="text-primary">#@Model.HoaDon.MAHD</span>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="info-item">
+                        <i class="fas fa-calendar-alt text-muted me-2"></i>
+                        <strong>Ngày lập:</strong>
+                        @Model.HoaDon.NGAYLAPHD.ToString("dd/MM/yyyy HH:mm")
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="info-item">
+                        <i class="fas fa-user text-muted me-2"></i>
+                        <strong>Khách hàng:</strong>
+                        @Model.HoaDon.TENKH
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="info-item">
+                        <i class="fas fa-phone text-muted me-2"></i>
+                        <strong>SĐT:</strong>
+                        @Model.HoaDon.SDT
+                    </div>
+                </div>
+                <div class="col-12 mb-3">
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt text-muted me-2"></i>
+                        <strong>Địa chỉ:</strong>
+                        @Model.HoaDon.DIACHI
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="info-item">
+                        <i class="fas fa-credit-card text-muted me-2"></i>
+                        <strong>Phương thức:</strong>
+                        <span class="badge bg-info">@Model.HoaDon.PHUONGTHUCTHANHTOAN</span>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="info-item">
+                        <i class="fas fa-info-circle text-muted me-2"></i>
+                        <strong>Tình trạng:</strong>
+                        @if (Model.HoaDon.TINHTRANG == "Đã thanh toán")
+                        {
+                            <span class="badge bg-success">@Model.HoaDon.TINHTRANG</span>
+                        }
+                        else if (Model.HoaDon.TINHTRANG == "Chờ thanh toán")
+                        {
+                            <span class="badge bg-warning">@Model.HoaDon.TINHTRANG</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">@Model.HoaDon.TINHTRANG</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chi tiết sản phẩm -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0"><i class="fas fa-shopping-bag me-2"></i>Chi tiết sản phẩm</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th class="text-center">Số lượng</th>
+                            <th class="text-end">Đơn giá</th>
+                            <th class="text-end">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ChiTiet)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        @if (!string.IsNullOrEmpty(item.ANH))
+                                        {
+                                            <img src="~/Content/Anh/sanpham/@item.ANH"
+                                                 alt="@item.TENSP"
+                                                 class="rounded me-3"
+                                                 style="width: 60px; height: 60px; object-fit: cover;">
+                                        }
+                                        <div>
+                                            <strong>@item.TENSP</strong>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center align-middle">
+                                    <span class="badge bg-secondary">@item.SOLUONG</span>
+                                </td>
+                                <td class="text-end align-middle">
+                                    @item.DONGIA.ToString("N0") đ
+                                </td>
+                                <td class="text-end align-middle">
+                                    <strong style="color: #aa1945;">@item.THANHTIEN.ToString("N0") đ</strong>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <td colspan="3" class="text-end">
+                                <h5 class="mb-0">Tổng cộng:</h5>
+                            </td>
+                            <td class="text-end">
+                                <h5 class="mb-0 fw-bold" style="color: #aa1945;">
+                                    @Model.HoaDon.TONGTIEN.ToString("N0") đ
+                                </h5>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lời cảm ơn và hành động -->
+    <div class="card shadow-sm">
+        <div class="card-body text-center p-4">
+            <i class="fas fa-gift" style="font-size: 48px; color: #aa1945; margin-bottom: 20px;"></i>
+            <h5 class="fw-bold mb-3">Cảm ơn bạn đã tin tưởng chúng tôi!</h5>
+            <p class="text-muted mb-4">
+                Đơn hàng của bạn đang được xử lý. Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.
+            </p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="@Url.Action("Index", "Home")" class="btn btn-outline-primary">
+                    <i class="fas fa-home me-2"></i>Về trang chủ
+                </a>
+                <a href="@Url.Action("Index", "SanPham")" class="btn btn-primary" style="background-color: #aa1945; border-color: #aa1945;">
+                    <i class="fas fa-shopping-cart me-2"></i>Tiếp tục mua sắm
+                </a>
+                <button onclick="window.print()" class="btn btn-outline-secondary">
+                    <i class="fas fa-print me-2"></i>In hóa đơn
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .success-header {
+        animation: fadeInDown 0.8s ease;
+    }
+
+    .success-icon-wrapper {
+        display: inline-block;
+        animation: successPop 0.8s ease;
+    }
+
+    .success-icon-wrapper i {
+        font-size: 80px;
+        color: #28a745;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes successPop {
+        0% {
+            transform: scale(0);
+        }
+        50% {
+            transform: scale(1.2);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .info-item {
+        padding: 8px 0;
+    }
+
+    .card-header {
+        font-weight: 600;
+    }
+
+    .table th {
+        font-weight: 600;
+        color: #666;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .btn-primary {
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(170, 25, 69, 0.3);
+    }
+
+    @media print {
+        .success-header,
+        .card:last-child,
+        .btn {
+            display: none !important;
+        }
+    }
+</style>    

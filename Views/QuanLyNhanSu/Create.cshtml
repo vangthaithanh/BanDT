@@ -2,91 +2,96 @@
 
 @{
     ViewBag.Title = "Thêm nhân viên";
+    Layout = "~/Views/Shared/_LayoutQT.cshtml";
 }
 
-<h2>Thêm nhân viên</h2>
+<div class="bg-white p-4 rounded-3 shadow-sm">
+    <div class="d-flex flex-column " style="min-height: 80vh;">
+        <h2>Thêm nhân viên</h2>
 
-@using (Html.BeginForm("Create", "QuanLyNhanSu", FormMethod.Post))
-{
-    @Html.AntiForgeryToken()
+        @using (Html.BeginForm("Create", "QuanLyNhanSu", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
 
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-    <div class="form-group">
-        @Html.LabelFor(m => m.UserName)
-        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(m => m.UserName)
+                @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Password)
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.ConfirmPassword)
+                @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
+            </div>
+
+            <hr />
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.HoTen)
+                @Html.TextBoxFor(m => m.HoTen, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.HoTen, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.SDT)
+                @Html.TextBoxFor(m => m.SDT, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.SDT, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Email)
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.DiaChi)
+                @Html.TextBoxFor(m => m.DiaChi, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.DiaChi, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.GioiTinh)
+                @Html.DropDownListFor(m => m.GioiTinh,
+                    new SelectList(new[]
+                    {
+                        new { Value = "", Text = "-- Chọn giới tính --" },
+                        new { Value = "Nam", Text = "Nam" },
+                        new { Value = "Nữ",  Text = "Nữ" }
+                    }, "Value", "Text", Model.GioiTinh),
+                    new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.GioiTinh, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.DanToc)
+                @Html.TextBoxFor(m => m.DanToc, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.DanToc, "", new { @class = "text-danger" })
+            </div>
+
+            <hr />
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.ChucVu)
+                @Html.DropDownListFor(
+                    m => m.ChucVu,
+                    (IEnumerable<SelectListItem>)ViewBag.RoleList,
+                    "-- Chọn chức vụ --",
+                    new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.ChucVu, "", new { @class = "text-danger" })
+            </div>
+
+            <button type="submit" class="btn btn-primary">Lưu</button>
+            @Html.ActionLink("Quay lại danh sách", "Index", "QuanLyNhanSu", null, new { @class = "btn btn-default" })
+        }
     </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.Password)
-        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.ConfirmPassword)
-        @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
-    </div>
-
-    <hr />
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.HoTen)
-        @Html.TextBoxFor(m => m.HoTen, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.HoTen, "", new { @class = "text-danger" })
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.SDT)
-        @Html.TextBoxFor(m => m.SDT, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.SDT, "", new { @class = "text-danger" })
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.Email)
-        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.DiaChi)
-        @Html.TextBoxFor(m => m.DiaChi, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.DiaChi, "", new { @class = "text-danger" })
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.GioiTinh)
-        @Html.DropDownListFor(m => m.GioiTinh,
-            new SelectList(new[]
-            {
-                new { Value = "", Text = "-- Chọn giới tính --" },
-                new { Value = "Nam", Text = "Nam" },
-                new { Value = "Nữ",  Text = "Nữ" }
-            }, "Value", "Text", Model.GioiTinh),
-            new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.GioiTinh, "", new { @class = "text-danger" })
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.DanToc)
-        @Html.TextBoxFor(m => m.DanToc, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.DanToc, "", new { @class = "text-danger" })
-    </div>
-
-    <hr />
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.ChucVu)
-        @Html.DropDownListFor(
-            m => m.ChucVu,
-            (IEnumerable<SelectListItem>)ViewBag.RoleList,
-            "-- Chọn chức vụ --",
-            new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.ChucVu, "", new { @class = "text-danger" })
-    </div>
-
-    <button type="submit" class="btn btn-primary">Lưu</button>
-    @Html.ActionLink("Quay lại danh sách", "Index", "QuanLyNhanSu", null, new { @class = "btn btn-default" })
-}
+</div>
